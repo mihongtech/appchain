@@ -8,13 +8,12 @@ import (
 	"github.com/mihongtech/appchain/accounts"
 	"github.com/mihongtech/appchain/accounts/keystore"
 	"github.com/mihongtech/appchain/app/context"
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/util/event"
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/helper"
-	"github.com/mihongtech/appchain/node"
+	"github.com/mihongtech/linkchain-core/common/btcec"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/util/log"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 type Wallet struct {
@@ -23,8 +22,6 @@ type Wallet struct {
 	Name     string
 	DataDir  string
 	accounts map[string]meta.Account
-
-	updateAccountSub *event.TypeMuxSubscription
 }
 
 func NewWallet() *Wallet {
@@ -44,33 +41,18 @@ func (w *Wallet) Setup(i interface{}) bool {
 }
 
 func (w *Wallet) Start() bool {
-	accountEvent := w.nodeAPI.GetAccountEvent()
-	w.updateAccountSub = accountEvent.Subscribe(node.AccountEvent{})
 	ksAccounts := w.keystore.Accounts()
 	for i := range ksAccounts {
 		account := helper.CreateTemplateAccount(ksAccounts[i].Address)
 		w.accounts[account.Id.String()] = *account
 	}
 	w.reScanAllAccount()
-	go w.updateWalletLoop()
 
 	return true
 }
 
 func (w *Wallet) Stop() {
 	log.Info("Stop wallet...")
-	w.updateAccountSub.Unsubscribe()
-}
-
-func (w *Wallet) updateWalletLoop() {
-	for obj := range w.updateAccountSub.Chan() {
-		switch ev := obj.Data.(type) {
-		case node.AccountEvent:
-			if ev.IsUpdate {
-				w.reScanAllAccount()
-			}
-		}
-	}
 }
 
 func (w *Wallet) reScanAllAccount() {
@@ -100,7 +82,7 @@ func (w *Wallet) updateWalletAccount(account meta.Account) error {
 	return nil
 }
 
-func (w *Wallet) NewAccount() (*meta.AccountID, error) {
+func (w *Wallet) NewAccount() (*node_meta.Address, error) {
 	ksAccount, err := w.keystore.NewAccount(w.password)
 	if err != nil {
 		log.Error("wallet", "newAccount", err)
@@ -129,7 +111,7 @@ func (w *Wallet) GetAccount(key string) (*meta.Account, error) {
 	if ok {
 		return &wa, nil
 	} else {
-		id, err := meta.HexToAccountID(key)
+		id, err := node_meta.HexToAddress(key)
 		if err != nil {
 			return nil, err
 		}
@@ -138,7 +120,7 @@ func (w *Wallet) GetAccount(key string) (*meta.Account, error) {
 	}
 }
 
-func (w *Wallet) queryAccount(id meta.AccountID) (meta.Account, error) {
+func (w *Wallet) queryAccount(id node_meta.Address) (meta.Account, error) {
 	stateDB, err := w.nodeAPI.StateAt(w.nodeAPI.GetBestBlock().Header.Status)
 	if err != nil {
 		return meta.Account{}, err
@@ -162,7 +144,7 @@ func (w *Wallet) SignTransaction(tx meta.Transaction) (*meta.Transaction, error)
 	return &tx, nil
 }
 
-func (w *Wallet) SignMessage(accountId meta.AccountID, hash []byte) (math.ISignature, error) {
+func (w *Wallet) SignMessage(accountId node_meta.Address, hash []byte) (math.ISignature, error) {
 	_, ok := w.accounts[accountId.String()]
 	if !ok {
 		return nil, errors.New("SignMessage can not find account id")
@@ -173,10 +155,10 @@ func (w *Wallet) SignMessage(accountId meta.AccountID, hash []byte) (math.ISigna
 		return nil, err
 	}
 	sign, err := w.keystore.SignHashWithPassphrase(ksAccount, w.password, hash)
-	return meta.NewSignature(sign), nil
+	return node_meta.NewSignature(sign), nil
 }
 
-func (w *Wallet) importKey(privkeyStr string) (*meta.AccountID, error) {
+func (w *Wallet) importKey(privkeyStr string) (*node_meta.Address, error) {
 	privkeyBuff, err := hex.DecodeString(privkeyStr)
 	if err != nil {
 		return nil, err
@@ -191,7 +173,7 @@ func (w *Wallet) importKey(privkeyStr string) (*meta.AccountID, error) {
 	return &ksAccount.Address, err
 }
 
-func (w *Wallet) ImportAccount(privateKeyStr string) (*meta.AccountID, error) {
+func (w *Wallet) ImportAccount(privateKeyStr string) (*node_meta.Address, error) {
 	a, err := w.importKey(privateKeyStr)
 	if err != nil {
 		return nil, err
@@ -199,7 +181,7 @@ func (w *Wallet) ImportAccount(privateKeyStr string) (*meta.AccountID, error) {
 	return a, nil
 }
 
-func (w *Wallet) ExportAccount(id meta.AccountID) (string, error) {
+func (w *Wallet) ExportAccount(id node_meta.Address) (string, error) {
 	_, ok := w.accounts[id.String()]
 	if !ok {
 		return "", errors.New("export can not find account id")

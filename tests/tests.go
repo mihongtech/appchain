@@ -3,15 +3,16 @@ package tests
 import (
 	"encoding/hex"
 	"encoding/json"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
+	"github.com/mihongtech/linkchain-core/common/math"
 	"os"
 
-	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/golang/protobuf/proto"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/protobuf"
 	"github.com/mihongtech/appchain/storage/state"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/appchain/common/math"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -19,12 +20,12 @@ import (
 )
 
 //Get block by testData
-func ConvertTestBlock(hexData string) *meta.Block {
+func ConvertTestBlock(hexData string) *node_meta.Block {
 	buffer, _ := hex.DecodeString(hexData)
 	pb := &protobuf.Block{}
 	proto.Unmarshal(buffer, pb)
 
-	block := meta.Block{}
+	block := node_meta.Block{}
 	block.Deserialize(pb)
 
 	return &block
@@ -64,9 +65,9 @@ func ConvertTestTransaction(hexData string) *meta.Transaction {
 }
 
 //Get accountId by testData
-func ConvertTestAccountId(data string) *meta.AccountID {
+func ConvertTestAccountId(data string) *node_meta.Address {
 	buffer, _ := hex.DecodeString(data)
-	id := meta.BytesToAccountID(buffer)
+	id := node_meta.BytesToAddress(buffer)
 	return &id
 }
 
@@ -97,7 +98,7 @@ type Chain struct {
 	Chain []Block `json:"chain"`
 }
 
-func (c *Chain) GetBlock(height int) *meta.Block {
+func (c *Chain) GetBlock(height int) *node_meta.Block {
 	return ConvertTestBlock(c.Chain[height].HexData)
 }
 
