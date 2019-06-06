@@ -2,17 +2,17 @@ package normal
 
 import (
 	"errors"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/config"
-	"github.com/mihongtech/appchain/core"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/interpreter"
-	"github.com/mihongtech/appchain/node/consensus"
+
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
-func (n *Interpreter) ValidateBlockHeader(engine consensus.Engine, chain core.Chain, block *meta.Block) error {
+func (n *Interpreter) ValidateBlockHeader(chain node_meta.ChainReader, block *node_meta.Block) error {
 	prevBlock, err := chain.GetBlockByID(*block.GetPrevBlockID())
 
 	if err != nil {
@@ -27,7 +27,7 @@ func (n *Interpreter) ValidateBlockHeader(engine consensus.Engine, chain core.Ch
 	return err
 }
 
-func (n *Interpreter) ValidateBlockBody(txValidator interpreter.TransactionValidator, chain core.Chain, block *meta.Block) error {
+func (n *Interpreter) ValidateBlockBody(txValidator interpreter.TransactionValidator, chain node_meta.ChainReader, block *node_meta.Block) error {
 	croot := block.CalculateTxTreeRoot()
 	if !block.GetMerkleRoot().IsEqual(&croot) {
 		log.Error("POA checkBlock", "check merkle root", false)
@@ -63,10 +63,10 @@ func (n *Interpreter) ValidateBlockBody(txValidator interpreter.TransactionValid
 	return nil
 }
 
-func (n *Interpreter) VerifyBlockState(block *meta.Block, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error {
+func (n *Interpreter) VerifyBlockState(block *node_meta.Block, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error {
 	log.Debug("VerifyBlockState", "actualReward", actualReward.GetInt64(), "fee", fee.GetInt64())
 	//Check block reward
-	if actualReward.Subtraction(*meta.NewAmount(config.DefaultBlockReward)).GetInt64() != fee.GetInt64() && len(block.TXs) > 0 {
+	if actualReward.Subtraction(*meta.NewAmount(config.DefaultBlockReward)).GetInt64() != fee.GetInt64() && len(block.TXs.Txs) > 0 {
 		return errors.New("coin base tx reward is error")
 	}
 

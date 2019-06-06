@@ -3,8 +3,8 @@ package normal
 import (
 	"errors"
 	"github.com/mihongtech/appchain/interpreter"
+	"github.com/mihongtech/linkchain-core/common"
 
-	"github.com/mihongtech/appchain/common"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
 )

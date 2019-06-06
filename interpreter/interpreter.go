@@ -1,6 +1,6 @@
 package interpreter
 
-import "github.com/mihongtech/appchain/common/lcdb"
+import "github.com/mihongtech/linkchain-core/common/lcdb"
 
 type Interpreter interface {
 	Validator

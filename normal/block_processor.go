@@ -2,16 +2,16 @@ package normal
 
 import (
 	"errors"
+	"github.com/mihongtech/linkchain-core/common/math"
 
-	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/config"
-	"github.com/mihongtech/appchain/core"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/interpreter"
 	"github.com/mihongtech/appchain/storage/state"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
-func (n *Interpreter) ProcessBlockState(block *meta.Block, stateDb *state.StateDB, chain core.Chain, validator interpreter.Validator) (error, []interpreter.Result) {
+func (n *Interpreter) ProcessBlockState(block *node_meta.Block, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (error, []interpreter.Result) {
 	//update mine account status
 	actualReward, fee, results, root, err := n.processBlockState(block, stateDb, chain, validator)
 	if err != nil {
@@ -24,7 +24,7 @@ func (n *Interpreter) ProcessBlockState(block *meta.Block, stateDb *state.StateD
 	return nil, results
 }
 
-func (n *Interpreter) processBlockState(block *meta.Block, stateDb *state.StateDB, chain core.Chain, validator interpreter.Validator) (*meta.Amount, *meta.Amount, []interpreter.Result, *math.Hash, error) {
+func (n *Interpreter) processBlockState(block *node_meta.Block, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (*meta.Amount, *meta.Amount, []interpreter.Result, *math.Hash, error) {
 	txs := block.GetTxs()
 
 	coinBase := meta.NewAmount(0)

@@ -1,14 +1,14 @@
 package interpreter
 
 import (
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/core"
 	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 type BlockValidator interface {
-	VerifyBlockState(block *meta.Block, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error
-	ValidateBlockBody(txValidator TransactionValidator, chain core.Chain, block *meta.Block) error
+	VerifyBlockState(block *node_meta.Block, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error
+	ValidateBlockBody(txValidator TransactionValidator, block *node_meta.Block) error
 }
 
 type TransactionValidator interface {
