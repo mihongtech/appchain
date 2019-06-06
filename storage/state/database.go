@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/trie"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/trie"
 )
 
 // Trie cache generation limit after which to evic trie nodes from memory.

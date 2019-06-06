@@ -21,10 +21,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/contract/vm/params"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/contract/vm/params"
+	"github.com/mihongtech/appchain/core/meta"
 
 	"golang.org/x/crypto/ripemd160"
 )

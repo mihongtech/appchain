@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/mihongtech/linkchain/contract/vm/params"
+	"github.com/mihongtech/appchain/contract/vm/params"
 )
 
 type (

@@ -13,7 +13,7 @@ LinkChain is an open source blockchain product launched by Mihong technology tea
 
 ## Getting start
 For prerequisites and detailed build instructions please read the
-[Installation Docs](https://github.com/mihongtech/linkchain/blob/master/doc/install.md).
+[Installation Docs](https://github.com/mihongtech/appchain/blob/master/doc/install.md).
 
 Building LinkChain requires a `Go` (version 1.10.1 or later) compiler,`lcd`and `lccli` enrtypoints.
 
@@ -35,11 +35,11 @@ An additional tool [golang-dep](https://github.com/golang/dep) for `go` needs to
 
 ### Install the mainnet
 
-The latest version of linkchain can be found from [github](https://github.com/mihongtech/linkchain). The `master` branch, which contains the latest stable release is recommended to choose. 
+The latest version of linkchain can be found from [github](https://github.com/mihongtech/appchain). The `master` branch, which contains the latest stable release is recommended to choose. 
 
     mkdir -p $GOPATH/src/github.com/
     cd $GOPATH/src/github.com/
-    git clone https://github.com/mihongtech/linkchain.git
+    git clone https://github.com/mihongtech/appchain.git
     cd linkchain && git checkout master
     dep ensure -v
 

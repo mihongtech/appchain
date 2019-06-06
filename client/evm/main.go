@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/math"
 	"gopkg.in/urfave/cli.v1"
 )
 

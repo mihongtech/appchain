@@ -3,7 +3,7 @@ package vm
 import (
 	"testing"
 
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 func TestJumpDestAnalysis(t *testing.T) {

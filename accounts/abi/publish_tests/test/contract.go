@@ -7,10 +7,10 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/mihongtech/linkchain/accounts/abi"
-	"github.com/mihongtech/linkchain/accounts/abi/bind"
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/accounts/abi"
+	"github.com/mihongtech/appchain/accounts/abi/bind"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // MyTokenABI is the input ABI used to generate the binding from.

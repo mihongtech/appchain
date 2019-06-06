@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 // packBytesSlice packs the given bytes as [L, V] as the canonical representation

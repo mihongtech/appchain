@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/mihongtech/linkchain/contract/vm"
+	"github.com/mihongtech/appchain/contract/vm"
 )
 
 // Iterator for disassembled EVM instructions

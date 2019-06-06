@@ -3,8 +3,8 @@ package vm
 import (
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // ContractRef is a reference to the contract's backing object

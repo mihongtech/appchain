@@ -8,7 +8,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/mihongtech/linkchain/accounts/abi"
+	"github.com/mihongtech/appchain/accounts/abi"
 	"golang.org/x/tools/imports"
 )
 

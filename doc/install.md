@@ -36,7 +36,7 @@ Next, let's download the latest version of linkchain. Here we'll use the `master
 ```bash
 mkdir -p $GOPATH/src/github.com/mihongtech/
 cd $GOPATH/src/github.com/mihongtech/
-git clone https://github.com/mihongtech/linkchain.git
+git clone https://github.com/mihongtech/appchain.git
 cd linkchain && git checkout master
 dep ensure -v
 

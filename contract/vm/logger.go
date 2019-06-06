@@ -7,9 +7,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/mihongtech/linkchain/common/hexutil"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/hexutil"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // Storage represents a contract's storage.

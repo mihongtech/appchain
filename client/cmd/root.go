@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mihongtech/linkchain/client/httpclient"
-	"github.com/mihongtech/linkchain/rpc/rpcjson"
+	"github.com/mihongtech/appchain/client/httpclient"
+	"github.com/mihongtech/appchain/rpc/rpcjson"
 	"github.com/spf13/cobra"
 )
 

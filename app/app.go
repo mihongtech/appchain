@@ -3,16 +3,17 @@ package app
 import (
 	"time"
 
-	"github.com/mihongtech/linkchain/app/context"
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/contract"
-	"github.com/mihongtech/linkchain/interpreter"
-	"github.com/mihongtech/linkchain/node"
-	config2 "github.com/mihongtech/linkchain/node/config"
-	"github.com/mihongtech/linkchain/normal"
-	"github.com/mihongtech/linkchain/rpc/rpcserver"
-	"github.com/mihongtech/linkchain/wallet"
+	"github.com/mihongtech/appchain/app/context"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/contract"
+	"github.com/mihongtech/appchain/interpreter"
+
+	"github.com/mihongtech/appchain/normal"
+	"github.com/mihongtech/appchain/rpc/rpcserver"
+	"github.com/mihongtech/appchain/wallet"
+	"github.com/mihongtech/linkchain-core/node"
+	node_config "github.com/mihongtech/linkchain-core/node/config"
 )
 
 var (
@@ -31,7 +32,7 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	appContext.InterpreterAPI = chooseInterpreterAPI(globalConfig.InterpreterAPI)
 
 	//create service
-	nodecfg := node.Config{BaseConfig: config2.BaseConfig{
+	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
 		DataDir:            globalConfig.DataDir,
 		GenesisPath:        globalConfig.GenesisPath,
 		ListenAddress:      globalConfig.ListenAddress,

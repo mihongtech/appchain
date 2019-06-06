@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mihongtech/linkchain/rpc/rpcobject"
+	"github.com/mihongtech/appchain/rpc/rpcobject"
 	"github.com/spf13/cobra"
 )
 

@@ -1,7 +1,7 @@
 package explorer
 
 import (
-	"github.com/mihongtech/linkchain/client/explorer/rpc/rpcserver"
+	"github.com/mihongtech/appchain/client/explorer/rpc/rpcserver"
 )
 
 var shutdownRequestChannel = make(chan struct{})

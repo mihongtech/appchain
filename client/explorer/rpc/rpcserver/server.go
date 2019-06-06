@@ -12,8 +12,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mihongtech/linkchain/client/explorer/rpc/rpcjson"
-	"github.com/mihongtech/linkchain/common/util/log"
+	"github.com/mihongtech/appchain/client/explorer/rpc/rpcjson"
+	"github.com/mihongtech/appchain/common/util/log"
 )
 
 const (

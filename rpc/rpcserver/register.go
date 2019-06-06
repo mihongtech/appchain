@@ -3,8 +3,8 @@ package rpcserver
 import (
 	"reflect"
 
-	"github.com/mihongtech/linkchain/rpc/rpcobject"
-	"github.com/mihongtech/linkchain/wallet"
+	"github.com/mihongtech/appchain/rpc/rpcobject"
+	"github.com/mihongtech/appchain/wallet"
 )
 
 type commandHandler func(*Server, interface{}, <-chan struct{}) (interface{}, error)

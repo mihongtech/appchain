@@ -6,10 +6,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/serialize"
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/protobuf"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/serialize"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/protobuf"
 
 	"github.com/golang/protobuf/proto"
 )

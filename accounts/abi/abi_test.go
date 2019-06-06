@@ -11,9 +11,9 @@ import (
 
 	"reflect"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 const jsondata = `

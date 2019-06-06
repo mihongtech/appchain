@@ -4,18 +4,18 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/helper"
-	"github.com/mihongtech/linkchain/insurance"
-	"github.com/mihongtech/linkchain/protobuf"
-	"github.com/mihongtech/linkchain/unittest"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/helper"
+	"github.com/mihongtech/appchain/insurance"
+	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/appchain/unittest"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/normal/validator"
-	"github.com/mihongtech/linkchain/storage/state"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/normal/validator"
+	"github.com/mihongtech/appchain/storage/state"
 )
 
 var (

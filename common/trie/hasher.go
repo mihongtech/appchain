@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
 
 	"github.com/golang/protobuf/proto"
 )

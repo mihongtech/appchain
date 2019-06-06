@@ -1,9 +1,9 @@
 package core
 
 import (
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 type Chain interface {

@@ -2,7 +2,7 @@ package vm
 
 import (
 	"fmt"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/math"
 	"math/big"
 )
 

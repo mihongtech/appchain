@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/protobuf"
-	"github.com/mihongtech/linkchain/storage/state"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/appchain/storage/state"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/math"
 	"path"
 	"path/filepath"
 	"runtime"

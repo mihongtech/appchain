@@ -3,13 +3,13 @@ package normal
 import (
 	"errors"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/core"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/interpreter"
-	"github.com/mihongtech/linkchain/node/consensus"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/core"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/interpreter"
+	"github.com/mihongtech/appchain/node/consensus"
 )
 
 func (n *Interpreter) ValidateBlockHeader(engine consensus.Engine, chain core.Chain, block *meta.Block) error {

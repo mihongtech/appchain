@@ -6,11 +6,11 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/contract/vm"
-	"github.com/mihongtech/linkchain/contract/vm/params"
-	"github.com/mihongtech/linkchain/core"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/contract/vm"
+	"github.com/mihongtech/appchain/contract/vm/params"
+	"github.com/mihongtech/appchain/core"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 var (

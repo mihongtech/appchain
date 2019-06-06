@@ -2,11 +2,11 @@ package normal
 
 import (
 	"errors"
-	"github.com/mihongtech/linkchain/interpreter"
+	"github.com/mihongtech/appchain/interpreter"
 
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/helper"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/helper"
 )
 
 func (n *Interpreter) ProcessTxState(tx *meta.Transaction, data interpreter.Params) (error, interpreter.Result) {

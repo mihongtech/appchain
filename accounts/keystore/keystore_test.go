@@ -26,8 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mihongtech/linkchain/accounts"
-	"github.com/mihongtech/linkchain/common/util/event"
+	"github.com/mihongtech/appchain/accounts"
+	"github.com/mihongtech/appchain/common/util/event"
 )
 
 var testSigData = make([]byte, 32)

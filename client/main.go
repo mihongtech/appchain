@@ -5,9 +5,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/mihongtech/linkchain/client/cmd"
-	"github.com/mihongtech/linkchain/client/explorer"
-	"github.com/mihongtech/linkchain/common/util/log"
+	"github.com/mihongtech/appchain/client/cmd"
+	"github.com/mihongtech/appchain/client/explorer"
+	"github.com/mihongtech/appchain/common/util/log"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package rpcobject
 
 import (
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 //block

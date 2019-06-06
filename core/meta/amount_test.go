@@ -1,7 +1,7 @@
 package meta
 
 import (
-	"github.com/mihongtech/linkchain/unittest"
+	"github.com/mihongtech/appchain/unittest"
 	"testing"
 )
 

@@ -4,11 +4,11 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mihongtech/linkchain/common/btcec"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/protobuf"
-	"github.com/mihongtech/linkchain/unittest"
+	"github.com/mihongtech/appchain/common/btcec"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/appchain/unittest"
 
 	"github.com/golang/protobuf/proto"
 )

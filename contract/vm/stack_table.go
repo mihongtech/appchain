@@ -2,7 +2,7 @@ package vm
 
 import (
 	"fmt"
-	"github.com/mihongtech/linkchain/contract/vm/params"
+	"github.com/mihongtech/appchain/contract/vm/params"
 )
 
 func makeStackFunc(pop, push int) stackValidationFunc {

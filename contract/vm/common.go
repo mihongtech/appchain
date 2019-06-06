@@ -3,8 +3,8 @@ package vm
 import (
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 // calculates the memory size required for a step

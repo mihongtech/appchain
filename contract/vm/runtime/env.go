@@ -1,9 +1,9 @@
 package runtime
 
 import (
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/contract"
-	"github.com/mihongtech/linkchain/contract/vm"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/contract"
+	"github.com/mihongtech/appchain/contract/vm"
 )
 
 func NewEnv(cfg *Config) *vm.EVM {

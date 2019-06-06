@@ -5,10 +5,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/contract"
-	"github.com/mihongtech/linkchain/core"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/contract"
+	"github.com/mihongtech/appchain/core"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 var (

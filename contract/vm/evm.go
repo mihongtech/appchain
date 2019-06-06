@@ -5,10 +5,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/contract/vm/params"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/contract/vm/params"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // emptyCodeHash is used by create to ensure deployment is disallowed to already

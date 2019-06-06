@@ -1,10 +1,10 @@
 package contract
 
 import (
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/contract/vm"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/node/consensus"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/contract/vm"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/node/consensus"
 	"math/big"
 )
 

@@ -1,9 +1,9 @@
 package vm
 
 import (
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/contract/vm/params"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/contract/vm/params"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // memoryGasCosts calculates the quadratic gas for memory expansion. It does so

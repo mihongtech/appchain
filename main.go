@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/mihongtech/linkchain/app"
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/config"
+	"github.com/mihongtech/appchain/app"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/config"
 )
 
 func main() {

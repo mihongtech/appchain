@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mihongtech/linkchain/client/explorer/rpc/rpcobject"
+	"github.com/mihongtech/appchain/client/explorer/rpc/rpcobject"
 )
 
 func getBestBlock(s *Server, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {

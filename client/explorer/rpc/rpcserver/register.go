@@ -3,9 +3,9 @@ package rpcserver
 import (
 	"reflect"
 
-	"github.com/mihongtech/linkchain/client/explorer/rpc/rpcjson"
-	"github.com/mihongtech/linkchain/client/explorer/rpc/rpcobject"
-	"github.com/mihongtech/linkchain/client/httpclient"
+	"github.com/mihongtech/appchain/client/explorer/rpc/rpcjson"
+	"github.com/mihongtech/appchain/client/explorer/rpc/rpcobject"
+	"github.com/mihongtech/appchain/client/httpclient"
 )
 
 type commandHandler func(*Server, interface{}, <-chan struct{}) (interface{}, error)

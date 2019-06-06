@@ -7,12 +7,12 @@ import (
 	"unsafe"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/serialize"
-	"github.com/mihongtech/linkchain/common/trie"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/protobuf"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/serialize"
+	"github.com/mihongtech/appchain/common/trie"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/protobuf"
 )
 
 //go:generate gencodec -type Receipt -field-override receiptMarshaling -out gen_receipt_json.go

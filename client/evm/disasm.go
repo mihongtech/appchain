@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/mihongtech/linkchain/client/evm/asm"
+	"github.com/mihongtech/appchain/client/evm/asm"
 	cli "gopkg.in/urfave/cli.v1"
 )
 

@@ -5,9 +5,9 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/mihongtech/linkchain/accounts/keystore"
-	"github.com/mihongtech/linkchain/common/btcec"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/accounts/keystore"
+	"github.com/mihongtech/appchain/common/btcec"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 // NewTransactor is a utility method to easily create a transaction signer from

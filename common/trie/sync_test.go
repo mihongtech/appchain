@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 // makeTestTrie create a sample test trie to test node-wise reconstruction.

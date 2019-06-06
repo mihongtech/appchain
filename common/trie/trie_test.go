@@ -13,9 +13,9 @@ import (
 	"testing"
 	"testing/quick"
 
-	_ "github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
+	_ "github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
 
 	"github.com/davecgh/go-spew/spew"
 )

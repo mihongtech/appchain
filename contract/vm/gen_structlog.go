@@ -3,10 +3,10 @@ package vm
 
 import (
 	"encoding/json"
-	"github.com/mihongtech/linkchain/common/hexutil"
+	"github.com/mihongtech/appchain/common/hexutil"
 	"math/big"
 
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 var _ = (*structLogMarshaling)(nil)

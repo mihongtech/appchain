@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/mihongtech/linkchain/rpc/rpcjson"
+	"github.com/mihongtech/appchain/rpc/rpcjson"
 )
 
 type Config struct {

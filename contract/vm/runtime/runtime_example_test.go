@@ -18,8 +18,8 @@ package runtime_test
 
 import (
 	"fmt"
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/contract/vm/runtime"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/contract/vm/runtime"
 )
 
 func ExampleExecute() {

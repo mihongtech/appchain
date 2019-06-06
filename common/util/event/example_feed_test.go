@@ -3,7 +3,7 @@ package event_test
 import (
 	"fmt"
 
-	"github.com/mihongtech/linkchain/common/util/event"
+	"github.com/mihongtech/appchain/common/util/event"
 )
 
 func ExampleFeed_acknowledgedEvents() {

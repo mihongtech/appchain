@@ -6,9 +6,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/mihongtech/linkchain/common"
-	"github.com/mihongtech/linkchain/common/lcdb"
-	"github.com/mihongtech/linkchain/common/math"
+	"github.com/mihongtech/appchain/common"
+	"github.com/mihongtech/appchain/common/lcdb"
+	"github.com/mihongtech/appchain/common/math"
 )
 
 func newEmptySecure() *SecureTrie {

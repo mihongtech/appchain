@@ -3,10 +3,10 @@ package contract
 import (
 	"errors"
 	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/interpreter"
-	"github.com/mihongtech/linkchain/normal"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/interpreter"
+	"github.com/mihongtech/appchain/normal"
 )
 
 func (e *Interpreter) ExecuteResult(results []interpreter.Result, txFee *meta.Amount, block *meta.Block) error {

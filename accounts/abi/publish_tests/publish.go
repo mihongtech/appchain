@@ -10,13 +10,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/mihongtech/linkchain/accounts/abi/bind"
-	"github.com/mihongtech/linkchain/accounts/abi/publish_tests/test"
-	"github.com/mihongtech/linkchain/client/lcclient"
-	"github.com/mihongtech/linkchain/common/btcec"
-	_ "github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/core/meta"
+	"github.com/mihongtech/appchain/accounts/abi/bind"
+	"github.com/mihongtech/appchain/accounts/abi/publish_tests/test"
+	"github.com/mihongtech/appchain/client/lcclient"
+	"github.com/mihongtech/appchain/common/btcec"
+	_ "github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/core/meta"
 )
 
 var DeployContractTimeout time.Duration = 60

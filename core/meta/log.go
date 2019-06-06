@@ -1,10 +1,10 @@
 package meta
 
 import (
-	"github.com/mihongtech/linkchain/common/hexutil"
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/common/serialize"
-	"github.com/mihongtech/linkchain/protobuf"
+	"github.com/mihongtech/appchain/common/hexutil"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/common/serialize"
+	"github.com/mihongtech/appchain/protobuf"
 
 	"github.com/golang/protobuf/proto"
 )

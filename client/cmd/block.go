@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mihongtech/linkchain/common/util/log"
-	"github.com/mihongtech/linkchain/rpc/rpcobject"
+	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/appchain/rpc/rpcobject"
 	"github.com/spf13/cobra"
 )
 

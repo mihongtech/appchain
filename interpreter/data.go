@@ -1,9 +1,9 @@
 package interpreter
 
 import (
-	"github.com/mihongtech/linkchain/core"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/storage/state"
+	"github.com/mihongtech/appchain/core"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/storage/state"
 )
 
 type Params interface {

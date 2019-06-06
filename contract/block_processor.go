@@ -2,15 +2,15 @@ package contract
 
 import (
 	"errors"
-	"github.com/mihongtech/linkchain/interpreter"
+	"github.com/mihongtech/appchain/interpreter"
 
-	"github.com/mihongtech/linkchain/common/math"
-	"github.com/mihongtech/linkchain/config"
-	"github.com/mihongtech/linkchain/contract/vm"
-	"github.com/mihongtech/linkchain/core"
-	"github.com/mihongtech/linkchain/core/meta"
-	"github.com/mihongtech/linkchain/normal"
-	"github.com/mihongtech/linkchain/storage/state"
+	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/contract/vm"
+	"github.com/mihongtech/appchain/core"
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/normal"
+	"github.com/mihongtech/appchain/storage/state"
 
 	"github.com/golang/protobuf/proto"
 )
