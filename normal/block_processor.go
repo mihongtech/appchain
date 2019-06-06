@@ -24,15 +24,6 @@ func (n *Interpreter) ProcessBlockState(block *meta.Block, stateDb *state.StateD
 	return nil, results
 }
 
-func (n *Interpreter) ExecuteBlockState(block *meta.Block, stateDb *state.StateDB, chain core.Chain, validator interpreter.Validator) (error, []interpreter.Result, math.Hash, *meta.Amount) {
-	//update mine account status
-	_, fee, results, root, err := n.processBlockState(block, stateDb, chain, validator)
-	if err != nil {
-		return err, nil, math.Hash{}, nil
-	}
-	return nil, results, *root, fee
-}
-
 func (n *Interpreter) processBlockState(block *meta.Block, stateDb *state.StateDB, chain core.Chain, validator interpreter.Validator) (*meta.Amount, *meta.Amount, []interpreter.Result, *math.Hash, error) {
 	txs := block.GetTxs()
 

@@ -6,11 +6,6 @@ import (
 	"github.com/mihongtech/appchain/core/meta"
 )
 
-type Executor interface {
-	ExecuteResult(results []Result, txFee *meta.Amount, block *meta.Block) error                                                             //After executing block state,execute the result
-	ChooseTransaction(txs []meta.Transaction, best *meta.Block, offChain OffChain, wallet Wallet, signer *meta.AccountID) []meta.Transaction //choose some of tx into block
-}
-
 type OffChain interface {
 	core.Service
 	UpdateMainChain(ev meta.ChainEvent)

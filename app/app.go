@@ -1,12 +1,15 @@
 package app
 
 import (
+	"github.com/mihongtech/appchain/bcsi"
+	"github.com/mihongtech/linkchain-core/storage"
+
 	"time"
 
 	"github.com/mihongtech/appchain/app/context"
 	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/config"
-	"github.com/mihongtech/appchain/contract"
+
 	"github.com/mihongtech/appchain/interpreter"
 
 	"github.com/mihongtech/appchain/normal"
@@ -28,10 +31,17 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	//prepare config
 	appContext.Config = globalConfig
 
-	//create interpreterAPI and Excutor by config choice different function
-	appContext.InterpreterAPI = chooseInterpreterAPI(globalConfig.InterpreterAPI)
+	//create storage
+	s := storage.NewStrorage(appContext.Config.DataDir)
+	if s == nil {
+		log.Error("init storage failed")
+		return false
+	}
 
-	//create service
+	//create bcsi service
+	bcsiServer := &bcsi.BCSIServer{s.GetDB()}
+
+	//create core service
 	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
 		DataDir:            globalConfig.DataDir,
 		GenesisPath:        globalConfig.GenesisPath,
@@ -41,10 +51,11 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 		InterpreterAPIType: globalConfig.InterpreterAPI,
 		RpcAddr:            globalConfig.RpcAddr,
 	},
-		BcsiAPI: nil,
+		BcsiAPI: bcsiServer,
 	}
 	nodeSvc = node.NewNode(nodecfg.BaseConfig)
 
+	//create wallet
 	walletSvc = wallet.NewWallet()
 
 	//node init
@@ -118,8 +129,6 @@ func chooseInterpreterAPI(interpreter string) interpreter.Interpreter {
 	switch interpreter {
 	case "normal":
 		return &normal.Interpreter{}
-	case "contract":
-		return &contract.Interpreter{}
 	default:
 		return &normal.Interpreter{}
 	}

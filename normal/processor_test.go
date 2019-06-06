@@ -8,13 +8,13 @@ import (
 	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/helper"
-	"github.com/mihongtech/appchain/insurance"
+
 	"github.com/mihongtech/appchain/protobuf"
 	"github.com/mihongtech/appchain/unittest"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/mihongtech/appchain/config"
-	"github.com/mihongtech/appchain/normal/validator"
+
 	"github.com/mihongtech/appchain/storage/state"
 )
 
