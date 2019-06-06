@@ -7,8 +7,8 @@ import (
 )
 
 type BlockValidator interface {
-	VerifyBlockState(block *node_meta.Block, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error
-	ValidateBlockBody(txValidator TransactionValidator, block *node_meta.Block) error
+	VerifyBlockState(header *node_meta.BlockHeader, txs []meta.Transaction, root math.Hash, actualReward *meta.Amount, fee *meta.Amount, headerData []byte) error
+	ValidateBlockBody(header *node_meta.BlockHeader, txs []meta.Transaction, txValidator TransactionValidator, chain node_meta.ChainReader) error
 }
 
 type TransactionValidator interface {

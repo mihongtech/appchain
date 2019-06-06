@@ -2,7 +2,7 @@ package normal
 
 import (
 	"errors"
-	"github.com/mihongtech/appchain/interpreter"
+	"github.com/mihongtech/appchain/business/interpreter"
 	"github.com/mihongtech/linkchain-core/common"
 
 	"github.com/mihongtech/appchain/config"

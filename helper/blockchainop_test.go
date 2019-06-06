@@ -1,18 +1,20 @@
 package helper
 
 import (
-	"github.com/mihongtech/appchain/common/math"
+	"testing"
+
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
-	"testing"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 func TestSortTransaction(t *testing.T) {
 	tx := CreateTempleteTx(config.DefaultTransactionVersion, config.NormalTx)
 
-	a1 := meta.BytesToAccountID([]byte("01"))
-	a2 := meta.BytesToAccountID([]byte("02"))
-	a3 := meta.BytesToAccountID([]byte("03"))
+	a1 := node_meta.BytesToAddress([]byte("01"))
+	a2 := node_meta.BytesToAddress([]byte("02"))
+	a3 := node_meta.BytesToAddress([]byte("03"))
 	tx.SetTo(a2, *meta.NewAmount(1))
 	tx.SetTo(a1, *meta.NewAmount(1))
 	tx.SetTo(a3, *meta.NewAmount(1))

@@ -2,34 +2,33 @@ package normal
 
 import (
 	"errors"
-	"github.com/mihongtech/linkchain-core/common/math"
 
+	"github.com/mihongtech/appchain/business/interpreter"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
-	"github.com/mihongtech/appchain/interpreter"
 	"github.com/mihongtech/appchain/storage/state"
+	"github.com/mihongtech/linkchain-core/common/math"
 	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
-func (n *Interpreter) ProcessBlockState(block *node_meta.Block, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (error, []interpreter.Result) {
+func (n *Interpreter) ProcessBlockState(header *node_meta.BlockHeader, txs []meta.Transaction, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (error, []interpreter.Result) {
 	//update mine account status
-	actualReward, fee, results, root, err := n.processBlockState(block, stateDb, chain, validator)
+	actualReward, fee, results, root, err := n.processBlockState(header, txs, stateDb, chain, validator)
 	if err != nil {
 		return err, nil
 	}
 
-	if err := validator.VerifyBlockState(block, *root, actualReward, fee, nil); err != nil {
+	if err := validator.VerifyBlockState(header, txs, *root, actualReward, fee, nil); err != nil {
 		return err, nil
 	}
 	return nil, results
 }
 
-func (n *Interpreter) processBlockState(block *node_meta.Block, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (*meta.Amount, *meta.Amount, []interpreter.Result, *math.Hash, error) {
-	txs := block.GetTxs()
+func (n *Interpreter) processBlockState(header *node_meta.BlockHeader, txs []meta.Transaction, stateDb *state.StateDB, chain node_meta.ChainReader, validator interpreter.Validator) (*meta.Amount, *meta.Amount, []interpreter.Result, *math.Hash, error) {
 
 	coinBase := meta.NewAmount(0)
 	txFee := meta.NewAmount(0)
-	inputData := Input{&block.Header, stateDb, chain, block.TXs[0].To.Coins[0].Id}
+	inputData := Input{header, stateDb, chain, txs[0].To.Coins[0].Id}
 	outputDatas := make([]interpreter.Result, 0)
 	for index := range txs {
 		if err := validator.VerifyTx(&txs[index], &inputData); err != nil {

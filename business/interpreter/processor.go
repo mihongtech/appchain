@@ -8,5 +8,5 @@ import (
 
 type Processor interface {
 	ProcessTxState(tx *meta.Transaction, param Params) (error, Result)
-	ProcessBlockState(block *node_meta.Block, stateDb *state.StateDB, validator Validator) (error, []Result)
+	ProcessBlockState(header *node_meta.BlockHeader, txs []meta.Transaction, stateDb *state.StateDB, chain node_meta.ChainReader, validator Validator) (error, []Result)
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/mihongtech/appchain/contract/vm/params"
 	"math/big"
 	"os"
 	"os/user"
@@ -12,13 +11,6 @@ import (
 type ChainConfig struct {
 	ChainId *big.Int `json:"chainId"` // chain id identifies the current chain and is used for replay protection
 	Period  uint64   `json:"period"`  // Number of seconds between blocks to enforce
-}
-
-// GasTable returns the gas table corresponding to the current phase (homestead or homestead reprice).
-//
-// The returned GasTable's fields shouldn't, under any circumstances, be changed.
-func (c *ChainConfig) GasTable(num *big.Int) params.GasTable {
-	return params.GasTableEIP158
 }
 
 type LinkChainConfig struct {

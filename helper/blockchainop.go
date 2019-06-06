@@ -2,31 +2,29 @@ package helper
 
 import (
 	"encoding/hex"
-	"sort"
-	"time"
-
-	"github.com/mihongtech/appchain/common"
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/linkchain-core/common"
+	"github.com/mihongtech/linkchain-core/common/btcec"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
+	"sort"
 )
 
 /*
 	Account
 */
 
-func CreateAccountIdByAddress(addr string) (*meta.AccountID, error) {
+func CreateAccountIdByAddress(addr string) (*node_meta.Address, error) {
 	buffer, err := hex.DecodeString(addr)
 	if err != nil {
 		return nil, err
 	}
 
-	id := meta.BytesToAccountID(buffer)
+	id := node_meta.BytesToAddress(buffer)
 	return &id, nil
 }
 
-func CreateAccountIdByPubKey(pubKey string) (*meta.AccountID, error) {
+func CreateAccountIdByPubKey(pubKey string) (*node_meta.Address, error) {
 	pkBytes, err := hex.DecodeString(pubKey)
 	if err != nil {
 		return nil, err
@@ -35,10 +33,10 @@ func CreateAccountIdByPubKey(pubKey string) (*meta.AccountID, error) {
 	if err != nil {
 		return nil, err
 	}
-	return meta.NewAccountId(pk), nil
+	return node_meta.NewAddress(pk), nil
 }
 
-func CreateAccountIdByPrivKey(privKey string) (*meta.AccountID, error) {
+func CreateAccountIdByPrivKey(privKey string) (*node_meta.Address, error) {
 	priv, err := hex.DecodeString(privKey)
 	if err != nil {
 		return nil, err
@@ -47,13 +45,12 @@ func CreateAccountIdByPrivKey(privKey string) (*meta.AccountID, error) {
 	if err != nil {
 		return nil, err
 	}
-	return meta.NewAccountId(pk), nil
+	return node_meta.NewAddress(pk), nil
 }
 
-func CreateTemplateAccount(id meta.AccountID) *meta.Account {
+func CreateTemplateAccount(id node_meta.Address) *meta.Account {
 	u := make([]meta.UTXO, 0)
-	c := meta.NewClearTime(0, 0)
-	a := meta.NewAccount(id, config.NormalAccount, u, c, meta.AccountID{})
+	a := meta.NewAccount(id, config.NormalAccount, u)
 	return a
 }
 
@@ -73,11 +70,11 @@ func CreateNormalAccount(key *btcec.PrivateKey) (*meta.Account, error) {
 	Transaction
 */
 
-func CreateToCoin(to meta.AccountID, amount *meta.Amount) *meta.ToCoin {
+func CreateToCoin(to node_meta.Address, amount *meta.Amount) *meta.ToCoin {
 	return meta.NewToCoin(to, amount)
 }
 
-func CreateFromCoin(from meta.AccountID, ticket ...meta.Ticket) *meta.FromCoin {
+func CreateFromCoin(from node_meta.Address, ticket ...meta.Ticket) *meta.FromCoin {
 	tickets := make([]meta.Ticket, 0)
 	fc := meta.NewFromCoin(from, tickets)
 	for _, c := range ticket {
@@ -97,7 +94,7 @@ func CreateTransaction(fromCoin meta.FromCoin, toCoin meta.ToCoin) *meta.Transac
 	return transaction
 }
 
-func CreateCoinBaseTx(to meta.AccountID, amount *meta.Amount, height uint32) *meta.Transaction {
+func CreateCoinBaseTx(to node_meta.Address, amount *meta.Amount, height uint32) *meta.Transaction {
 	toCoin := meta.NewToCoin(to, amount)
 	transaction := meta.NewEmptyTransaction(config.DefaultTransactionVersion, config.CoinBaseTx)
 	transaction.AddToCoin(*toCoin)
@@ -140,25 +137,4 @@ func SortTransaction(tx *meta.Transaction) {
 			return false
 		}
 	})
-}
-
-/*
-
-	Block
-*/
-func CreateBlock(prevHeight uint32, prevHash meta.BlockID) (*meta.Block, error) {
-	var txs []meta.Transaction
-	header := meta.NewBlockHeader(config.DefaultBlockVersion, prevHeight+1, time.Now(),
-		config.DefaultNounce, config.DefaultDifficulty, prevHash,
-		math.Hash{}, math.Hash{}, meta.Signature{}, nil)
-	b := meta.NewBlock(*header, txs)
-	return RebuildBlock(b)
-
-}
-
-func RebuildBlock(block *meta.Block) (*meta.Block, error) {
-	pb := block
-	root := pb.CalculateTxTreeRoot()
-	pb.Header.SetMerkleRoot(root)
-	return pb, nil
 }
