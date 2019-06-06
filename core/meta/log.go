@@ -1,10 +1,11 @@
 package meta
 
 import (
-	"github.com/mihongtech/appchain/common/hexutil"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/serialize"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common/hexutil"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/serialize"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -16,7 +17,7 @@ import (
 type Log struct {
 	// Consensus fields:
 	// address of the contract that generated the event
-	Address AccountID `json:"address" gencodec:"required"`
+	Address node_meta.Address `json:"address" gencodec:"required"`
 	// list of topics provided by the contract.
 	Topics []math.Hash `json:"topics" gencodec:"required"`
 	// supplied by the contract, usually ABI-encoded
@@ -27,11 +28,11 @@ type Log struct {
 	// block in which the transaction was included
 	BlockNumber uint64 `json:"blockNumber"`
 	// hash of the transaction
-	TxHash TxID `json:"transactionHash" gencodec:"required"`
+	TxHash node_meta.TxID `json:"transactionHash" gencodec:"required"`
 	// index of the transaction in the block
 	TxIndex uint `json:"transactionIndex" gencodec:"required"`
 	// hash of the block in which the transaction was included
-	BlockHash BlockID `json:"blockHash"`
+	BlockHash node_meta.BlockID `json:"blockHash"`
 	// index of the log in the block
 	Index uint `json:"logIndex" gencodec:"required"`
 
@@ -48,13 +49,13 @@ type logMarshaling struct {
 }
 
 type protoLog struct {
-	Address AccountID
+	Address node_meta.Address
 	Topics  []math.Hash
 	Data    []byte
 }
 
 type protoStorageLog struct {
-	Address     AccountID
+	Address     node_meta.Address
 	Topics      []math.Hash
 	Data        []byte
 	BlockNumber uint64

@@ -4,15 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
 	"unsafe"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/appchain/common"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/serialize"
-	"github.com/mihongtech/appchain/common/trie"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/serialize"
+	"github.com/mihongtech/linkchain-core/common/trie"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
+
+	"github.com/golang/protobuf/proto"
 )
 
 //go:generate gencodec -type Receipt -field-override receiptMarshaling -out gen_receipt_json.go
@@ -40,9 +43,9 @@ type Receipt struct {
 	Logs              []*meta.Log `json:"logs"              gencodec:"required"`
 
 	// Implementation fields (don't reorder!)
-	TxHash          math.Hash      `json:"transactionHash" gencodec:"required"`
-	ContractAddress meta.AccountID `json:"contractAddress"`
-	GasUsed         uint64         `json:"gasUsed" gencodec:"required"`
+	TxHash          math.Hash         `json:"transactionHash" gencodec:"required"`
+	ContractAddress node_meta.Address `json:"contractAddress"`
+	GasUsed         uint64            `json:"gasUsed" gencodec:"required"`
 }
 
 // NewReceipt creates a barebone transaction receipt, copying the init fields.

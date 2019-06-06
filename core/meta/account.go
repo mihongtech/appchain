@@ -1,141 +1,18 @@
 package meta
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"math/big"
+	"github.com/mihongtech/linkchain-core/common/serialize"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	"sort"
-	"strings"
 
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/serialize"
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
 )
-
-const AccountLength = 20
-
-type AccountID [AccountLength]byte
-
-func CreateAccountId(b []byte) AccountID {
-	hash := math.HashB(b)
-	return BytesToAccountID(hash[12:])
-}
-
-func BytesToAccountID(b []byte) AccountID {
-	var a AccountID
-	if len(b) > len(a) {
-		b = b[len(b)-AccountLength:]
-	}
-	copy(a[AccountLength-len(b):], b)
-	return a
-}
-
-func HexToAccountID(str string) (AccountID, error) {
-	if len(str) > 1 {
-		if str[0:2] == "0x" || str[0:2] == "0X" {
-			str = str[2:]
-		}
-	}
-	if len(str)%2 == 1 {
-		str = "0" + str
-	}
-
-	data, err := hex.DecodeString(str)
-	if err != nil {
-		return AccountID{}, err
-	}
-	return BytesToAccountID(data), nil
-}
-
-func (a AccountID) String() string {
-	return hex.EncodeToString(a[:])
-}
-
-func (a AccountID) IsEqual(other AccountID) bool {
-	return strings.Compare(a.String(), other.String()) == 0
-}
-
-func (a AccountID) IsEmpty() bool {
-	isEmpty := true
-	l := len(a)
-	for i := 0; i < l; i++ {
-		if a[i] != 0 {
-			isEmpty = false
-			break
-		}
-	}
-	return isEmpty
-}
-
-//Serialize/Deserialize
-func (a *AccountID) Serialize() serialize.SerializeStream {
-	accountId := protobuf.AccountID{
-		Id: proto.NewBuffer(a[:]).Bytes(),
-	}
-	return &accountId
-}
-
-func (a *AccountID) Deserialize(s serialize.SerializeStream) error {
-	data := s.(*protobuf.AccountID)
-
-	return a.SetBytes(data.Id)
-}
-
-func (a *AccountID) SetBytes(b []byte) error {
-	if len(b) > AccountLength {
-		return errors.New("byte's len more than max account length")
-	}
-	copy(a[:], b)
-	return nil
-}
-
-func (a AccountID) CloneBytes() []byte {
-	return a[:]
-}
-
-// Big converts an address to a big integer.
-func (a AccountID) Big() *big.Int { return new(big.Int).SetBytes(a[:]) }
-
-// BigToAccountId returns Address with byte values of b.
-// If b is larger than len(h), b will be cropped from the left.
-func BigToAccountId(b *big.Int) AccountID { return BytesToAccountID(b.Bytes()) }
-
-//Json Hash convert to Hex
-func (a AccountID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(a.String())
-}
-
-func (a *AccountID) UnmarshalJSON(data []byte) error {
-	var str string = ""
-	if err := json.Unmarshal(data, &str); err != nil {
-		return err
-	}
-	account, err := HexToAccountID(str)
-	if err != nil {
-		return err
-	}
-	return a.SetBytes(account.CloneBytes())
-}
-
-func NewAccountId(pubkey *btcec.PublicKey) *AccountID {
-	// TODO: maybe use bitcion account generate function
-	id := BytesToAccountID(math.HashB(pubkey.SerializeCompressed())[12:])
-	return &id
-}
-
-func NewAccountIdFromStr(str string) (*AccountID, error) {
-	buff, err := hex.DecodeString(str)
-	if err != nil {
-		return nil, err
-	}
-	id := BytesToAccountID(buff)
-	return &id, nil
-}
 
 type UTXO struct {
 	Ticket
@@ -156,99 +33,19 @@ func (u *UTXO) String() string {
 	return string(data)
 }
 
-type ClearTime struct {
-	LastClearTime    int64  `json:"currentClearTime"`
-	LastEffectHeight uint32 `json:"lastEffectHeight"`
-	NextClearTime    int64  `json:"nextClearTime"`    // the next clear time.If it is puls 0,user can not change clear time
-	NextEffectHeight uint32 `json:"nextEffectHeight"` // the effective height of next clear time
-}
-
-// get ClearTime.
-// when ClearTime init,the nextClearTime and NextEffectHeight must be 0.
-func NewClearTime(lastClearTime int64, lastEffectHeight uint32) *ClearTime {
-	return &ClearTime{LastClearTime: lastClearTime, LastEffectHeight: lastEffectHeight, NextClearTime: 0, NextEffectHeight: 0}
-}
-
-// get clearTime.
-// If nextClearTime had effect,then return nextClearTime.
-func (c *ClearTime) GetClearTime(blockHeight uint32) int64 {
-	if c.IsNextEffect(blockHeight) {
-		//last setClearTime have effect
-		return c.NextClearTime
-	} else {
-		return c.LastClearTime
-	}
-}
-
-// set clearTime.
-// If nextClearTime had effect,then can set clearTime.
-// If NextEffectHeight == 0 (ClearTime had not be set clearTime),then then can set clearTime.
-func (c *ClearTime) SetClearTime(clearTime int64, effectHeight uint32, blockHeight uint32) bool {
-	if c.IsCanSet(blockHeight) {
-		c.LastClearTime = c.NextClearTime
-		c.LastEffectHeight = c.NextEffectHeight
-		c.NextClearTime = clearTime
-		c.NextEffectHeight = effectHeight
-		return true
-	} else {
-		//the account have ineffective clear time.
-		return false
-	}
-}
-
-// Check nextClear have effected with current block height.
-// If NextEffectHeight > 0 (ClearTime had be set clearTime),then check block have reached to nextEffectHeight.
-// If NextEffectHeight == 0 (ClearTime had not be set clearTime),then nextClear.
-func (c *ClearTime) IsNextEffect(blockHeight uint32) bool {
-	return c.NextEffectHeight <= blockHeight && c.NextEffectHeight > 0
-}
-
-func (c *ClearTime) IsCanSet(blockHeight uint32) bool {
-	return c.IsNextEffect(blockHeight) || c.NextEffectHeight == 0
-}
-
-func (c *ClearTime) Serialize() serialize.SerializeStream {
-	s := &protobuf.ClearTime{
-		LastClearTime:    proto.Int64(c.LastClearTime),
-		LastEffectHeight: proto.Uint32(c.LastEffectHeight),
-		NextClearTime:    proto.Int64(c.NextClearTime),
-		NextEffectHeight: proto.Uint32(c.NextEffectHeight),
-	}
-	return s
-}
-
-func (c *ClearTime) Deserialize(s serialize.SerializeStream) error {
-	data := s.(*protobuf.ClearTime)
-	c.LastClearTime = *data.LastClearTime
-	c.LastEffectHeight = *data.LastEffectHeight
-	c.NextClearTime = *data.NextClearTime
-	c.NextEffectHeight = *data.NextEffectHeight
-	return nil
-}
-
-func (c *ClearTime) String() string {
-	data, err := json.Marshal(c)
-	if err != nil {
-		return err.Error()
-	}
-	return string(data)
-}
-
 type Account struct {
-	Id          AccountID `json:"accountId"`
-	AccountType uint32    `json:"accountType"`
-	UTXOs       []UTXO    `json:"AccountUXTO"`
-	Clear       ClearTime `json:"clearTime"`
-	SecurityId  AccountID `json:"securityId"`
-	StorageRoot TreeID    `json:"storageRoot"`
-	CodeHash    math.Hash `json:"codeHash"`
+	Id          node_meta.Address `json:"accountId"`
+	AccountType uint32            `json:"accountType"`
+	UTXOs       []UTXO            `json:"AccountUXTO"`
+	StorageRoot node_meta.TreeID  `json:"storageRoot"`
+	CodeHash    math.Hash         `json:"codeHash"`
 }
 
-func NewAccount(id AccountID, accountType uint32, utxos []UTXO, clearTime *ClearTime, securityId AccountID) *Account {
-	return &Account{Id: id, AccountType: accountType, UTXOs: utxos, Clear: *clearTime, SecurityId: securityId, StorageRoot: math.Hash{}, CodeHash: math.Hash{}}
+func NewAccount(id node_meta.Address, accountType uint32, utxos []UTXO) *Account {
+	return &Account{Id: id, AccountType: accountType, UTXOs: utxos, StorageRoot: math.Hash{}, CodeHash: math.Hash{}}
 }
 
-func (a Account) GetAccountID() *AccountID {
+func (a Account) GetAccountID() *node_meta.Address {
 	return &a.Id
 }
 
@@ -359,18 +156,6 @@ func (a *Account) GetUTXO(ticket Ticket) *UTXO {
 	return nil
 }
 
-func (a *Account) GetClearTime(height uint32) int64 {
-	return a.Clear.GetClearTime(height)
-}
-
-func (a *Account) SetClearTime(clearTime int64, effectHeight uint32, blockHeight uint32) bool {
-	return a.Clear.SetClearTime(clearTime, effectHeight, blockHeight)
-}
-
-func (a *Account) IsCanSetClearTime(blockHeight uint32) bool {
-	return a.Clear.IsCanSet(blockHeight)
-}
-
 //Serialize/Deserialize
 func (a *Account) Serialize() serialize.SerializeStream {
 	us := make([]*protobuf.UTXO, 0)
@@ -389,11 +174,6 @@ func (a *Account) Serialize() serialize.SerializeStream {
 		Type:  proto.Uint32(a.AccountType),
 		Utxos: us,
 	}
-	if !a.SecurityId.IsEmpty() {
-		clearTime := a.Clear.Serialize().(*protobuf.ClearTime)
-		s.Clear = clearTime
-		s.SecurityId = a.SecurityId.Serialize().(*protobuf.AccountID)
-	}
 
 	if !a.CodeHash.IsEmpty() {
 		s.CodeHash = a.CodeHash.Serialize().(*protobuf.Hash)
@@ -411,16 +191,6 @@ func (a *Account) Deserialize(s serialize.SerializeStream) error {
 	data := s.(*protobuf.Account)
 	if err := a.Id.Deserialize(data.Id); err != nil {
 		return err
-	}
-
-	if data.SecurityId != nil {
-		if err := a.SecurityId.Deserialize(data.SecurityId); err != nil {
-			return err
-		}
-
-		if err := a.Clear.Deserialize(data.Clear); err != nil {
-			return err
-		}
 	}
 
 	if data.StorageRoot != nil {
@@ -499,6 +269,6 @@ func (a *Account) MakeFromCoin(value *Amount, blockHeight uint32) (*FromCoin, *A
 	return fc, fromAmount, nil
 }
 
-func GetAccountHash(id AccountID) math.Hash {
+func GetAccountHash(id node_meta.Address) math.Hash {
 	return math.HashH(id.CloneBytes())
 }

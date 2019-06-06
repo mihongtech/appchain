@@ -1,14 +1,28 @@
 package meta
 
-/*var unmarshalLogTests = map[string]struct {
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/mihongtech/linkchain-core/common/math"
+	"reflect"
+	"testing"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/mihongtech/linkchain-core/common/hexutil"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
+)
+
+var unmarshalLogTests = map[string]struct {
 	input     string
 	want      *Log
 	wantError error
 }{
-	"ok": {
+	/*"ok": {
 		input: `{"address":"0xecf8f87f810ecf450940c9f60066b4a7a501d6a7","blockHash":"0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056","blockNumber":"0x1ecfa4","data":"0x000000000000000000000000000000000000000000000001a055690d9db80000","logIndex":"0x2","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x00000000000000000000000080b2c9d7cbbf30a1b0fc8983c647d754c6525615"],"transactionHash":"0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e","transactionIndex":"0x3"}`,
 		want: &Log{
-			Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
+			Address:     node_meta.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
 			BlockHash:   common.HexToHash("0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056"),
 			BlockNumber: 2019236,
 			Data:        hexutil.MustDecode("0x000000000000000000000000000000000000000000000001a055690d9db80000"),
@@ -24,7 +38,7 @@ package meta
 	"empty data": {
 		input: `{"address":"0xecf8f87f810ecf450940c9f60066b4a7a501d6a7","blockHash":"0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056","blockNumber":"0x1ecfa4","data":"0x","logIndex":"0x2","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x00000000000000000000000080b2c9d7cbbf30a1b0fc8983c647d754c6525615"],"transactionHash":"0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e","transactionIndex":"0x3"}`,
 		want: &Log{
-			Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
+			Address:     node_meta.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
 			BlockHash:   common.HexToHash("0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056"),
 			BlockNumber: 2019236,
 			Data:        []byte{},
@@ -40,8 +54,8 @@ package meta
 	"missing block fields (pending logs)": {
 		input: `{"address":"0xecf8f87f810ecf450940c9f60066b4a7a501d6a7","data":"0x","logIndex":"0x0","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"],"transactionHash":"0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e","transactionIndex":"0x3"}`,
 		want: &Log{
-			Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
-			BlockHash:   common.Hash{},
+			Address:     node_meta.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
+			BlockHash:   math.Hash{},
 			BlockNumber: 0,
 			Data:        []byte{},
 			Index:       0,
@@ -55,7 +69,7 @@ package meta
 	"Removed: true": {
 		input: `{"address":"0xecf8f87f810ecf450940c9f60066b4a7a501d6a7","blockHash":"0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056","blockNumber":"0x1ecfa4","data":"0x","logIndex":"0x2","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"],"transactionHash":"0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e","transactionIndex":"0x3","removed":true}`,
 		want: &Log{
-			Address:     common.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
+			Address:     node_meta.HexToAddress("0xecf8f87f810ecf450940c9f60066b4a7a501d6a7"),
 			BlockHash:   common.HexToHash("0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056"),
 			BlockNumber: 2019236,
 			Data:        []byte{},
@@ -71,7 +85,7 @@ package meta
 	"missing data": {
 		input:     `{"address":"0xecf8f87f810ecf450940c9f60066b4a7a501d6a7","blockHash":"0x656c34545f90a730a19008c0e7a7cd4fb3895064b48d6d69761bd5abad681056","blockNumber":"0x1ecfa4","logIndex":"0x2","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef","0x00000000000000000000000080b2c9d7cbbf30a1b0fc8983c647d754c6525615","0x000000000000000000000000f9dff387dcb5cc4cca5b91adb07a95f54e9f1bb6"],"transactionHash":"0x3b198bfd5d2907285af009e9ae84a0ecd63677110d89d7e030251acb87f6487e","transactionIndex":"0x3"}`,
 		wantError: fmt.Errorf("missing required field 'data' for Log"),
-	},
+	},*/
 }
 
 func TestUnmarshalLog(t *testing.T) {
@@ -102,4 +116,4 @@ func checkError(t *testing.T, testname string, got, want error) bool {
 		t.Errorf("test %q: got error %q, want %q", testname, got, want)
 	}
 	return false
-}*/
+}

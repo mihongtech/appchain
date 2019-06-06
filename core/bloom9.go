@@ -2,10 +2,11 @@ package core
 
 import (
 	"fmt"
-	"github.com/mihongtech/appchain/common/hexutil"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/core/meta"
 	"math/big"
+
+	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/linkchain-core/common/hexutil"
+	"github.com/mihongtech/linkchain-core/common/math"
 )
 
 type bytesBacked interface {

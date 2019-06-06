@@ -1,33 +1,32 @@
 package meta
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/serialize"
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/serialize"
+	"github.com/mihongtech/linkchain-core/common/util/log"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
 )
 
 type Ticket struct {
-	Txid  TxID   `json:"txid"`
-	Index uint32 `json:"index"`
+	Txid  node_meta.TxID `json:"txid"`
+	Index uint32         `json:"index"`
 }
 
-func NewTicket(txid TxID, index uint32) *Ticket {
+func NewTicket(txid node_meta.TxID, index uint32) *Ticket {
 	return &Ticket{Txid: txid, Index: index}
 }
 
-func (t *Ticket) SetTxid(id TxID) {
+func (t *Ticket) SetTxid(id node_meta.TxID) {
 	t.Txid = id
 }
 
-func (t *Ticket) GetTxid() *TxID {
+func (t *Ticket) GetTxid() *node_meta.TxID {
 	return &t.Txid
 }
 
@@ -67,11 +66,11 @@ func (t *Ticket) String() string {
 }
 
 type FromCoin struct {
-	Id     AccountID `json:"accountId"`
-	Ticket []Ticket  `json:"tickets"`
+	Id     node_meta.Address `json:"accountId"`
+	Ticket []Ticket          `json:"tickets"`
 }
 
-func NewFromCoin(id AccountID, ticket []Ticket) *FromCoin {
+func NewFromCoin(id node_meta.Address, ticket []Ticket) *FromCoin {
 	return &FromCoin{Id: id, Ticket: ticket}
 }
 
@@ -87,11 +86,11 @@ func (fc *FromCoin) GetTickets() []Ticket {
 	return tks
 }
 
-func (fc *FromCoin) SetId(id AccountID) {
+func (fc *FromCoin) SetId(id node_meta.Address) {
 	fc.Id = id
 }
 
-func (fc *FromCoin) GetId() AccountID {
+func (fc *FromCoin) GetId() node_meta.Address {
 	return fc.Id
 }
 
@@ -189,18 +188,18 @@ func (tf *TransactionFrom) String() string {
 }
 
 type ToCoin struct {
-	Id    AccountID `json:"id"`
-	Value Amount    `json:"value"`
+	Id    node_meta.Address `json:"id"`
+	Value Amount            `json:"value"`
 }
 
-func NewToCoin(id AccountID, value *Amount) *ToCoin {
+func NewToCoin(id node_meta.Address, value *Amount) *ToCoin {
 	return &ToCoin{Id: id, Value: *value}
 }
 
-func (tc *ToCoin) SetId(id AccountID) {
+func (tc *ToCoin) SetId(id node_meta.Address) {
 	tc.Id = id
 }
-func (tc *ToCoin) GetId() AccountID {
+func (tc *ToCoin) GetId() node_meta.Address {
 	return tc.Id
 }
 
@@ -227,7 +226,7 @@ func (tc *ToCoin) Serialize() serialize.SerializeStream {
 
 func (tc *ToCoin) Deserialize(s serialize.SerializeStream) error {
 	data := *s.(*protobuf.ToCoin)
-	tc.Id = AccountID{}
+	tc.Id = node_meta.Address{}
 	if err := tc.Id.Deserialize(data.Id); err != nil {
 		return err
 	}
@@ -294,45 +293,6 @@ func (tt *TransactionTo) String() string {
 	return string(data)
 }
 
-type Signature struct {
-	Code []byte `json:"code"`
-}
-
-func NewSignature(code []byte) *Signature {
-	return &Signature{Code: code}
-}
-
-//Serialize/Deserialize
-func (sign *Signature) Serialize() serialize.SerializeStream {
-	peer := protobuf.Signature{
-		Code: proto.NewBuffer(sign.Code).Bytes(),
-	}
-	return &peer
-}
-
-func (sign *Signature) Deserialize(s serialize.SerializeStream) error {
-	data := *s.(*protobuf.Signature)
-	sign.Code = data.Code
-	return nil
-}
-
-func (sign *Signature) String() string {
-	return hex.EncodeToString(sign.Code)
-}
-
-func (sign *Signature) Verify(hash []byte, address []byte) error {
-	signer, err := btcec.GetSigner(hash, sign.Code)
-	if err != nil {
-		return err
-	}
-	id := NewAccountId(signer)
-
-	if id.IsEqual(BytesToAccountID(address)) {
-		return nil
-	}
-	return errors.New("Verify sign failed")
-}
-
 type Transaction struct {
 	// The version of the Transaction.  This is not the same as the Blocks version.
 	Version uint32 `json:"version"`
@@ -347,15 +307,15 @@ type Transaction struct {
 	To TransactionTo `json:"to"`
 
 	//The Sign of From, which is represent the Coins each Froms if not can put.
-	Sign []Signature `json:"signs"`
+	Sign []node_meta.Signature `json:"signs"`
 
 	//The extra feild of Transaction.
 	Data []byte `json:"data"`
 
-	txid TxID
+	txid node_meta.TxID
 }
 
-func NewTransaction(version uint32, txtype uint32, from TransactionFrom, to TransactionTo, sign []Signature, data []byte) *Transaction {
+func NewTransaction(version uint32, txtype uint32, from TransactionFrom, to TransactionTo, sign []node_meta.Signature, data []byte) *Transaction {
 	return &Transaction{
 		Version: version,
 		Type:    txtype,
@@ -373,11 +333,11 @@ func NewEmptyTransaction(version uint32, txtype uint32) *Transaction {
 	toCoins := make([]ToCoin, 0)
 	tt := *NewTransactionTo(toCoins)
 
-	signs := make([]Signature, 0)
+	signs := make([]node_meta.Signature, 0)
 	return NewTransaction(version, txtype, tf, tt, signs, nil)
 }
 
-func (tx *Transaction) GetTxID() *TxID {
+func (tx *Transaction) GetTxID() *node_meta.TxID {
 	if tx.txid.IsEmpty() {
 		s := tx.Serialize()
 		err := tx.Deserialize(s)
@@ -411,7 +371,7 @@ func (tx *Transaction) AddToCoin(toCoin ...ToCoin) {
 	}
 }
 
-func (tx *Transaction) SetTo(id AccountID, amount Amount) {
+func (tx *Transaction) SetTo(id node_meta.Address, amount Amount) {
 	index := -1
 	for i := range tx.To.Coins {
 		if tx.To.Coins[i].Id.IsEqual(id) {
@@ -429,7 +389,7 @@ func (tx *Transaction) SetTo(id AccountID, amount Amount) {
 }
 
 func (tx *Transaction) AddSignature(signature math.ISignature) {
-	tx.Sign = append(tx.Sign, *signature.(*Signature))
+	tx.Sign = append(tx.Sign, *signature.(*node_meta.Signature))
 }
 
 func (tx *Transaction) GetFromCoins() []FromCoin {
@@ -526,7 +486,7 @@ func (tx *Transaction) Deserialize(s serialize.SerializeStream) error {
 	tx.Sign = tx.Sign[:0]
 
 	for _, cointent := range data.Sign {
-		nSignatrue := Signature{}
+		nSignatrue := node_meta.Signature{}
 
 		if err := nSignatrue.Deserialize(cointent); err != nil {
 			return err
@@ -548,7 +508,7 @@ func (tx *Transaction) Deserialize(s serialize.SerializeStream) error {
 		return err
 	}
 
-	tx.txid = *MakeTxID(buffer)
+	tx.txid = *node_meta.MakeTxID(buffer)
 	return nil
 }
 
@@ -563,7 +523,7 @@ func (tx *Transaction) String() string {
 func TxDifference(a, b []Transaction) (keep []Transaction) {
 	keep = make([]Transaction, 0, len(a))
 
-	remove := make(map[TxID]struct{})
+	remove := make(map[node_meta.TxID]struct{})
 	for _, tx := range b {
 		remove[*tx.GetTxID()] = struct{}{}
 	}

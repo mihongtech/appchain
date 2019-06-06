@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/appchain/common/btcec"
-	_ "github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/protobuf"
 	"github.com/mihongtech/appchain/unittest"
+	"github.com/mihongtech/linkchain-core/common/btcec"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
+
+	"github.com/golang/protobuf/proto"
 )
 
 var testPri, _ = hex.DecodeString("7a9c6f2b865c98c9fe174869de5818f4c62bc845441c08269487cdba6688f6b1")
@@ -19,10 +20,10 @@ var testPri, _ = hex.DecodeString("7a9c6f2b865c98c9fe174869de5818f4c62bc845441c0
 //Create transaction for test.
 func getTestTransaction() *Transaction {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	utxos := make([]UTXO, 0)
-	c := NewClearTime(0, 0)
-	toAccount := NewAccount(*id, 0, utxos, c, *id)
+
+	toAccount := NewAccount(*id, 0, utxos)
 
 	toId := *toAccount.GetAccountID()
 
@@ -35,12 +36,12 @@ func getTestTransaction() *Transaction {
 	tcs = append(tcs, *tc)
 	tt := NewTransactionTo(tcs)
 
-	signs := make([]Signature, 0)
+	signs := make([]node_meta.Signature, 0)
 	testTx := NewTransaction(config.DefaultTransactionVersion, config.NormalTx, *tf, *tt, signs, nil)
 
 	sign, _ := ex.Sign(testTx.GetTxID().CloneBytes())
 
-	signature := NewSignature(sign.Serialize())
+	signature := node_meta.NewSignature(sign.Serialize())
 	testTx.AddSignature(signature)
 
 	return testTx
@@ -56,7 +57,7 @@ func getTransactionFrom() *TransactionFrom {
 //Create fromCoin for test.
 func getTestFromCoin() *FromCoin {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -65,17 +66,17 @@ func getTestFromCoin() *FromCoin {
 }
 
 //Create Signature for test.
-func getTestSignature() *Signature {
+func getTestSignature() *node_meta.Signature {
 	tx := getTestTransaction()
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
 	sign, _ := ex.Sign(tx.GetTxID().CloneBytes())
-	return NewSignature(sign.Serialize())
+	return node_meta.NewSignature(sign.Serialize())
 }
 
 //Create TransactionTo for test.
 func getTestTransactionTo() *TransactionTo {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	tc := NewToCoin(*id, NewAmount(10))
 	tcs := make([]ToCoin, 0)
 	tcs = append(tcs, *tc)
@@ -92,7 +93,7 @@ func getTestTicket() *Ticket {
 //Create ToCoin for test.
 func getTestToCoin() *ToCoin {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	tc := NewToCoin(*id, NewAmount(10))
 	return tc
 }
@@ -125,10 +126,10 @@ func TestTransaction_Verify_More_Sign(t *testing.T) {
 //Testing the method 'Verify' of transaction with error sign.
 func TestTransaction_Verify_Error_Sign(t *testing.T) {
 	ex, _ := btcec.NewPrivateKey(btcec.S256())
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	utxos := make([]UTXO, 0)
-	c := NewClearTime(0, 0)
-	toAccount := NewAccount(*id, 0, utxos, c, *id)
+
+	toAccount := NewAccount(*id, 0, utxos)
 
 	toId := *toAccount.GetAccountID()
 
@@ -141,12 +142,12 @@ func TestTransaction_Verify_Error_Sign(t *testing.T) {
 	tcs = append(tcs, *tc)
 	tt := NewTransactionTo(tcs)
 
-	signs := make([]Signature, 0)
+	signs := make([]node_meta.Signature, 0)
 	testTx := NewTransaction(config.DefaultTransactionVersion, config.NormalTx, *tf, *tt, signs, nil)
 
 	sign, _ := ex.Sign(testTx.GetTxID().CloneBytes())
 
-	signature := NewSignature(sign.Serialize())
+	signature := node_meta.NewSignature(sign.Serialize())
 	testTx.AddSignature(signature)
 
 	err := testTx.Verify()
@@ -249,10 +250,10 @@ func TestTransaction_Deserialize_Nil_From(t *testing.T) {
 //Testing the method 'Serialize' of transaction.
 func TestTransaction_Serialize_Nil_From(t *testing.T) {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	utxos := make([]UTXO, 0)
-	c := NewClearTime(0, 0)
-	toAccount := NewAccount(*id, 0, utxos, c, *id)
+
+	toAccount := NewAccount(*id, 0, utxos)
 
 	toId := *toAccount.GetAccountID()
 
@@ -261,7 +262,7 @@ func TestTransaction_Serialize_Nil_From(t *testing.T) {
 	tcs = append(tcs, *tc)
 	tt := NewTransactionTo(tcs)
 
-	signs := make([]Signature, 0)
+	signs := make([]node_meta.Signature, 0)
 	tx := NewTransaction(config.DefaultTransactionVersion, config.NormalTx, TransactionFrom{}, *tt, signs, nil)
 
 	//tx.From.Coins = tx.From.Coins[0:0]
@@ -362,7 +363,7 @@ func TestSignature_Deserialize(t *testing.T) {
 	err := proto.Unmarshal(buffer, signature)
 	unittest.NotError(t, err)
 
-	newSignature := Signature{}
+	newSignature := node_meta.Signature{}
 	err = newSignature.Deserialize(signature)
 	unittest.NotError(t, err)
 

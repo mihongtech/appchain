@@ -2,13 +2,14 @@ package meta
 
 import (
 	"encoding/hex"
+	"github.com/mihongtech/linkchain-core/common/math"
 	"testing"
 
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/protobuf"
 	"github.com/mihongtech/appchain/unittest"
+	"github.com/mihongtech/linkchain-core/common/btcec"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -18,10 +19,10 @@ import (
 //Create Account for test.
 func getTestAccount() *Account {
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	utxos := make([]UTXO, 0)
-	c := NewClearTime(0, 0)
-	testAccount := NewAccount(*id, config.NormalAccount, utxos, c, *id)
+
+	testAccount := NewAccount(*id, config.NormalAccount, utxos)
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 
@@ -57,7 +58,6 @@ func TestAccount_Deserialize(t *testing.T) {
 //Testing the method 'Serialize' of  account.
 func TestAccount_Serialize_Empty_Security(t *testing.T) {
 	account := getTestAccount()
-	account.SecurityId = AccountID{}
 	s := account.Serialize()
 
 	_, err := proto.Marshal(s)
@@ -78,60 +78,11 @@ func TestAccount_Deserialize_Empty_Security(t *testing.T) {
 	unittest.NotError(t, err)
 }
 
-func TestAccount_IsCanSetClearTime(t *testing.T) {
-	account := getTestAccount()
-	unittest.Assert(t, account.IsCanSetClearTime(0), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(1), "IsCanSetClearTime")
-
-	//test one setClearTime
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Assert(t, !account.IsCanSetClearTime(0), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(5), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(6), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(7), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(9), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(10), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(11), "IsCanSetClearTime")
-
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Assert(t, account.IsCanSetClearTime(0), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(5), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(6), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(7), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(9), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(10), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(11), "IsCanSetClearTime")
-
-	//test have set two time clearTime,but the recent set have not effecting
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.IsCanSetClearTime(0), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(11), "IsCanSetClearTime")
-	unittest.Assert(t, !account.IsCanSetClearTime(17), "IsCanSetClearTime")
-
-	//test have set two time clearTime,but the recent set had effecting
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, account.IsCanSetClearTime(18), "IsCanSetClearTime")
-	unittest.Assert(t, account.IsCanSetClearTime(19), "IsCanSetClearTime")
-}
-
 //test checkFromCoin with correct fc
 func TestAccount_CheckFromCoin(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -146,7 +97,7 @@ func TestAccount_CheckFromCoin(t *testing.T) {
 func TestAccount_CheckFromCoin2(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -161,7 +112,7 @@ func TestAccount_CheckFromCoin2(t *testing.T) {
 func TestAccount_CheckFromCoin3(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.NewPrivateKey(btcec.S256())
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -194,7 +145,7 @@ func TestAccount_IsFromEffect(t *testing.T) {
 	account := getTestAccount()
 	//correct fc
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -207,7 +158,7 @@ func TestAccount_IsFromEffect(t *testing.T) {
 
 	//error fc account
 	ex1, _ := btcec.NewPrivateKey(btcec.S256())
-	id1 := NewAccountId(ex1.PubKey())
+	id1 := node_meta.NewAddress(ex1.PubKey())
 	txid1, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket1 := NewTicket(*txid1, 0)
 	tickets1 := make([]Ticket, 0)
@@ -221,7 +172,7 @@ func TestAccount_IsFromEffect(t *testing.T) {
 	//err fc ticket but correct fc account
 	//correct fc
 	ex2, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id2 := NewAccountId(ex2.PubKey())
+	id2 := node_meta.NewAddress(ex2.PubKey())
 	txid2, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket2 := NewTicket(*txid2, 0)
 	tickets2 := make([]Ticket, 0)
@@ -236,10 +187,10 @@ func TestAccount_IsFromEffect(t *testing.T) {
 //test checkFromCoin with delay utxo
 func TestAccount_IsFromEffect2(t *testing.T) {
 	account := getTestAccount()
-	account.UTXOs[0].EffectHeight += config.DefaultDelayTime
+	account.UTXOs[0].EffectHeight += 3
 	//correct fc
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -255,7 +206,7 @@ func TestAccount_IsFromEffect2(t *testing.T) {
 
 	//error fc account
 	ex1, _ := btcec.NewPrivateKey(btcec.S256())
-	id1 := NewAccountId(ex1.PubKey())
+	id1 := node_meta.NewAddress(ex1.PubKey())
 	txid1, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket1 := NewTicket(*txid1, 0)
 	tickets1 := make([]Ticket, 0)
@@ -272,7 +223,7 @@ func TestAccount_IsFromEffect2(t *testing.T) {
 	//err fc ticket but correct fc account
 	//correct fc
 	ex2, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id2 := NewAccountId(ex2.PubKey())
+	id2 := node_meta.NewAddress(ex2.PubKey())
 	txid2, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket2 := NewTicket(*txid2, 0)
 	tickets2 := make([]Ticket, 0)
@@ -291,7 +242,7 @@ func TestAccount_RemoveUTXOByFromCoin(t *testing.T) {
 	account := getTestAccount()
 	//correct fc
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -306,7 +257,7 @@ func TestAccount_RemoveUTXOByFromCoin_Error_Ticket(t *testing.T) {
 	account := getTestAccount()
 	//correct fc
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -321,7 +272,7 @@ func TestAccount_RemoveUTXOByFromCoin_Error_Account(t *testing.T) {
 	account := getTestAccount()
 	//correct fc
 	ex, _ := btcec.NewPrivateKey(btcec.S256())
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -332,156 +283,6 @@ func TestAccount_RemoveUTXOByFromCoin_Error_Account(t *testing.T) {
 	unittest.Error(t, err)
 }
 
-func resetClearTime(account *Account) {
-	account.Clear.LastEffectHeight = 0
-	account.Clear.LastClearTime = 0
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-}
-
-func TestAccount_SetClearTime(t *testing.T) {
-	account := getTestAccount()
-	unittest.Assert(t, account.SetClearTime(6, 10, 0), "SetClearTime")
-
-	resetClearTime(account)
-	unittest.Assert(t, account.SetClearTime(6, 10, 7), "SetClearTime")
-
-	//test one setClearTime
-	resetClearTime(account)
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Assert(t, !account.SetClearTime(9, 18, 0), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Assert(t, !account.SetClearTime(9, 18, 9), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Assert(t, account.SetClearTime(9, 18, 10), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Assert(t, account.SetClearTime(9, 18, 11), "SetClearTime")
-
-	//test init clearTime
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Assert(t, account.SetClearTime(9, 18, 0), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Assert(t, account.SetClearTime(9, 18, 9), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Assert(t, account.SetClearTime(9, 18, 10), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Assert(t, account.SetClearTime(9, 18, 11), "SetClearTime")
-
-	//test have set two time clearTime,but the recent set have not effecting
-	//test init clearTime
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.SetClearTime(9, 18, 0), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.SetClearTime(10, 22, 10), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.SetClearTime(10, 22, 11), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.SetClearTime(10, 22, 17), "SetClearTime")
-
-	//test have set two time clearTime,but the recent set had effecting
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, account.SetClearTime(10, 22, 18), "SetClearTime")
-
-	resetClearTime(account)
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, account.SetClearTime(10, 22, 19), "SetClearTime")
-
-}
-
-func TestAccount_GetClearTime(t *testing.T) {
-	account := getTestAccount()
-	unittest.Equal(t, account.GetClearTime(0), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(1), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(2), account.Clear.LastClearTime)
-
-	//test one setClearTime
-	account.Clear.NextEffectHeight = 10
-	account.Clear.NextClearTime = 6
-	unittest.Equal(t, account.GetClearTime(0), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(9), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(10), account.Clear.NextClearTime)
-	unittest.Equal(t, account.GetClearTime(11), account.Clear.NextClearTime)
-
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 0
-	account.Clear.NextClearTime = 0
-	unittest.Equal(t, account.GetClearTime(0), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(9), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(10), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(11), account.Clear.LastClearTime)
-
-	//test have set two time clearTime,but the recent set have not effecting
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Equal(t, account.GetClearTime(9), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(10), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(11), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(13), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(17), account.Clear.LastClearTime)
-	unittest.Equal(t, account.GetClearTime(18), account.Clear.NextClearTime)
-	unittest.Equal(t, account.GetClearTime(19), account.Clear.NextClearTime)
-}
-
 func TestAccount_GetAmount(t *testing.T) {
 	account := getTestAccount()
 	unittest.Equal(t, account.GetAmount().GetInt64(), int64(10))
@@ -490,7 +291,7 @@ func TestAccount_GetAmount(t *testing.T) {
 func TestAccount_GetFromCoinValue_Null(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -503,7 +304,7 @@ func TestAccount_GetFromCoinValue_Null(t *testing.T) {
 func TestAccount_GetFromCoinValue(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.PrivKeyFromBytes(btcec.S256(), testPri)
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -517,7 +318,7 @@ func TestAccount_GetFromCoinValue(t *testing.T) {
 func TestAccount_GetFromCoinValue_Error_Account(t *testing.T) {
 	account := getTestAccount()
 	ex, _ := btcec.NewPrivateKey(btcec.S256())
-	id := NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := NewTicket(*txid, 0)
 	tickets := make([]Ticket, 0)
@@ -541,34 +342,4 @@ func TestAccount_GetUTXO_Error_Account(t *testing.T) {
 	ticket := NewTicket(*txid, 0)
 	u := account.GetUTXO(*ticket)
 	unittest.NotEqual(t, u, account.UTXOs[0])
-}
-
-func TestClearTime_IsNextEffect(t *testing.T) {
-	account := getTestAccount()
-	unittest.Assert(t, !account.Clear.IsNextEffect(0), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(0), "IsNextEffect")
-
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	unittest.Assert(t, !account.Clear.IsNextEffect(0), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(9), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(10), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(11), "IsNextEffect")
-
-	//test have set two time clearTime
-	//test init clearTime
-	account.Clear.LastEffectHeight = 10
-	account.Clear.LastClearTime = 6
-	account.Clear.NextEffectHeight = 18
-	account.Clear.NextClearTime = 9
-	unittest.Assert(t, !account.Clear.IsNextEffect(0), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(9), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(10), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(11), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(12), "IsNextEffect")
-	unittest.Assert(t, !account.Clear.IsNextEffect(17), "IsNextEffect")
-	unittest.Assert(t, account.Clear.IsNextEffect(18), "IsNextEffect")
-	unittest.Assert(t, account.Clear.IsNextEffect(19), "IsNextEffect")
-
 }
