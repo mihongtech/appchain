@@ -5,15 +5,17 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
+	"github.com/mihongtech/linkchain-core/common/util/log"
+
 	"math/big"
 
-	"github.com/mihongtech/appchain/common/lcdb"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -151,7 +153,7 @@ func blockKey(hash math.Hash, number uint64) []byte {
 //
 // Note, due to concurrent download of header and block body the header and thus
 // canonical hash can be stored in the database but the body data not (yet).
-func GetBlock(db DatabaseReader, hash math.Hash, number uint64) *meta.Block {
+func GetBlock(db DatabaseReader, hash math.Hash, number uint64) *node_meta.Block {
 	data := GetBlockBytes(db, hash, number)
 	if len(data) == 0 {
 		return nil
@@ -161,7 +163,7 @@ func GetBlock(db DatabaseReader, hash math.Hash, number uint64) *meta.Block {
 		log.Error("decode block failed")
 		return nil
 	}
-	block := &meta.Block{}
+	block := &node_meta.Block{}
 	block.Deserialize(&b)
 	return block
 }
@@ -194,11 +196,11 @@ func GetTransaction(db DatabaseReader, hash math.Hash) (*meta.Transaction, math.
 	// log.Info("get tx id", "blockHash", blockHash)
 	if !blockHash.IsEmpty() {
 		block := GetBlock(db, blockHash, blockNumber)
-		if block == nil || len(block.TXs) <= int(txIndex) {
+		if block == nil || len(block.TXs.Txs) <= int(txIndex) {
 			log.Error("Transaction referenced missing", "number", blockNumber, "hash", blockHash, "index", txIndex)
 			return nil, math.Hash{}, 0, 0
 		}
-		return &block.TXs[txIndex], blockHash, blockNumber, txIndex
+		return &block.TXs.Txs[txIndex], blockHash, blockNumber, txIndex
 	} else {
 		log.Error("Transaction not found", "hash", hash)
 		return nil, math.Hash{}, 0, 0
@@ -252,7 +254,7 @@ func WriteTrieSyncProgress(db lcdb.Putter, count uint64) error {
 }
 
 // WriteBlock serializes a block into the database, header and body separately.
-func WriteBlock(db lcdb.Putter, block *meta.Block) error {
+func WriteBlock(db lcdb.Putter, block *node_meta.Block) error {
 
 	data := block.Serialize()
 	bytesData, err := proto.Marshal(data)
@@ -277,10 +279,10 @@ func WriteBlock(db lcdb.Putter, block *meta.Block) error {
 
 // WriteTxLookupEntries stores a positional metadata for every transaction from
 // a block, enabling hash based transaction and receipt lookups.
-func WriteTxLookupEntries(db lcdb.Putter, block *meta.Block) error {
+func WriteTxLookupEntries(db lcdb.Putter, block *node_meta.Block) error {
 
 	// Iterate over each transaction and encode its metadata
-	for i, tx := range block.TXs {
+	for i, tx := range block.TXs.Txs {
 		entry := TxLookupEntry{
 			BlockHash:  block.GetBlockID().String(),
 			BlockIndex: uint64(block.GetHeight()),

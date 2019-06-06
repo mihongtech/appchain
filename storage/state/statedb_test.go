@@ -1,15 +1,15 @@
 package state
 
 import (
+	"fmt"
 	"testing"
 
-	"fmt"
-
-	"github.com/mihongtech/appchain/common/btcec"
-	"github.com/mihongtech/appchain/common/lcdb"
-	"github.com/mihongtech/appchain/common/math"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/linkchain-core/common/btcec"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 func TestNew(t *testing.T) {
@@ -43,14 +43,14 @@ func writeStateDB(root math.Hash, db lcdb.Database) math.Hash {
 
 	//create state rpcobject
 	a1 := getNewAccount(10)
-	obj1 := sdb.NewObject(math.HashH(a1.GetAccountID().ID), *a1)
+	obj1 := sdb.NewObject(math.HashH(a1.GetAccountID().CloneBytes()), *a1)
 
 	sdb.SetObject(obj1)
 	obj1key = obj1.key.String()
 	fmt.Println("rpcobject 1 key:", obj1key)
 
 	a2 := getNewAccount(20)
-	obj2 := sdb.NewObject(math.HashH(a2.GetAccountID().ID), *a2)
+	obj2 := sdb.NewObject(math.HashH(a2.GetAccountID().CloneBytes()), *a2)
 
 	sdb.SetObject(obj2)
 	obj2key = obj2.key.String()
@@ -84,11 +84,11 @@ func readStateDB(root math.Hash, db lcdb.Database) {
 
 func getNewAccount(amount int64) *meta.Account {
 	ex, _ := btcec.NewPrivateKey(btcec.S256())
-	id := meta.NewAccountId(ex.PubKey())
+	id := node_meta.NewAddress(ex.PubKey())
 
 	utxos := make([]meta.UTXO, 0)
-	c := meta.NewClearTime(0, 0)
-	account := meta.NewAccount(*id, config.NormalAccount, utxos, c, *id)
+
+	account := meta.NewAccount(*id, config.NormalAccount, utxos)
 	txid, _ := math.NewHashFromStr("5e6e12fc6cddbcdac39a9b265402960473fd2640a65ef32e558f89b47be40f64")
 	ticket := meta.NewTicket(*txid, 0)
 

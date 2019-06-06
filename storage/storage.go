@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mihongtech/appchain/common/lcdb"
-	"github.com/mihongtech/appchain/common/util/log"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 )
 
 type Storage struct {

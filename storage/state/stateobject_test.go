@@ -1,11 +1,10 @@
 package state
 
 import (
+	"fmt"
 	"testing"
 
-	"fmt"
-
-	"github.com/mihongtech/appchain/common/math"
+	"github.com/mihongtech/linkchain-core/common/math"
 )
 
 func TestSample(t *testing.T) {

@@ -3,9 +3,11 @@ package state
 import (
 	"bytes"
 	"fmt"
-	"github.com/mihongtech/appchain/common/math"
+
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/storage"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 type Code []byte
@@ -78,7 +80,7 @@ func (s *StateObject) empty() bool {
 }
 
 // Returns the address of the contract/account
-func (obj *StateObject) Address() meta.AccountID {
+func (obj *StateObject) Address() node_meta.Address {
 	return obj.data.Id
 }
 
