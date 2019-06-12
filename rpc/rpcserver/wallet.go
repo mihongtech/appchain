@@ -1,8 +1,6 @@
 package rpcserver
 
 import (
-	"bitbucket.org/rollchain/node"
-	"encoding/hex"
 	"fmt"
 	"reflect"
 
@@ -59,12 +57,13 @@ func getAccountInfo(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 			u.LocatedHeight,
 			u.EffectHeight})
 	}
-	code, err := GetNodeAPI(s).GetCode(*account.GetAccountID())
+	/*code, err := GetNodeAPI(s).GetCode(*account.GetAccountID())
 	if err != nil {
 		code = []byte(err.Error())
-	}
+	}*/
+	code := "no code"
 
-	log.Info("rpc wallet", "code", hex.EncodeToString(code), "code hash", account.CodeHash.String())
+	log.Info("rpc wallet", "code", code, "code hash", account.CodeHash.String())
 	return &rpcobject.AccountRSP{
 		account.GetAccountID().String(),
 		account.AccountType,
@@ -72,7 +71,7 @@ func getAccountInfo(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 		txArray,
 		account.StorageRoot.String(),
 		account.CodeHash.String(),
-		hex.EncodeToString(code),
+		code,
 	}, nil
 }
 
@@ -114,8 +113,11 @@ func sendMoneyTransaction(s *Server, cmd interface{}, closeChan <-chan struct{})
 	if err != nil {
 		return nil, err
 	}
-
-	if err = GetNodeAPI(s).ProcessTx(transaction); err != nil {
+	nodeTx, err := meta.ConvertToNodeTX(*transaction)
+	if err != nil {
+		return nil, err
+	}
+	if err = GetNodeAPI(s).ProcessTx(&nodeTx); err != nil {
 		return nil, err
 	}
 

@@ -29,14 +29,14 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	appContext.Config = globalConfig
 
 	//create storage
-	s := storage.NewStrorage(appContext.Config.DataDir)
+	s := storage.NewStrorage(appContext.Config.DataDir + "app")
 	if s == nil {
 		log.Error("init storage failed")
 		return false
 	}
 
 	//create bcsi service
-	bcsiServer := bcsi.NewBCSIServer(s.GetDB(), chooseInterpreterAPI(appContext.Config.InterpreterAPI))
+	appContext.BCSIAPI = bcsi.NewBCSIServer(s.GetDB(), chooseInterpreterAPI(appContext.Config.InterpreterAPI))
 
 	//create core service
 	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
@@ -48,7 +48,7 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 		InterpreterAPIType: globalConfig.InterpreterAPI,
 		RpcAddr:            globalConfig.RpcAddr,
 	},
-		BcsiAPI: bcsiServer,
+		BcsiAPI: appContext.BCSIAPI,
 	}
 	nodeSvc = node.NewNode(nodecfg.BaseConfig)
 

@@ -2,12 +2,11 @@ package storage
 
 import (
 	_ "bytes"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
+	"github.com/mihongtech/linkchain-core/common/math"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 	_ "math/big"
 	"testing"
-
-	"github.com/mihongtech/appchain/common/lcdb"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/core/meta"
 )
 
 // Tests block storage and retrieval operations.
@@ -15,9 +14,9 @@ func TestBlockStorage(t *testing.T) {
 	db, _ := lcdb.NewMemDatabase()
 
 	// Create a test block to move around the database and make sure it's really new
-	block := meta.NewBlock(meta.BlockHeader{
+	block := node_meta.NewBlock(node_meta.BlockHeader{
 		Data: []byte("test block"),
-	}, []meta.Transaction{})
+	}, []node_meta.Transaction{})
 	if entry := GetBlock(db, *block.GetBlockID(), uint64(block.GetHeight())); entry != nil {
 		t.Fatalf("Non existent block returned: %v", entry)
 	}
@@ -65,12 +64,12 @@ func TestCanonicalMappingStorage(t *testing.T) {
 // Tests that head headers and head blocks can be assigned, individually.
 func TestHeadStorage(t *testing.T) {
 	db, _ := lcdb.NewMemDatabase()
-	blockFull := meta.NewBlock(meta.BlockHeader{
+	blockFull := node_meta.NewBlock(node_meta.BlockHeader{
 		Data: []byte("test block full"),
-	}, []meta.Transaction{})
-	blockFast := meta.NewBlock(meta.BlockHeader{
+	}, []node_meta.Transaction{})
+	blockFast := node_meta.NewBlock(node_meta.BlockHeader{
 		Data: []byte("test block fast"),
-	}, []meta.Transaction{})
+	}, []node_meta.Transaction{})
 
 	// Check that no head entries are in a pristine database
 	if entry := GetHeadBlockHash(db); entry != (math.Hash{}) {
@@ -94,7 +93,7 @@ func TestHeadStorage(t *testing.T) {
 	}
 }
 
-//// Tests that positional lookup metadata can be stored and retrieved.
+//// Tests that positional lookup node_metadata can be stored and retrieved.
 //func TestLookupStorage(t *testing.T) {
 //	db, _ := lcdb.NewMemDatabase()
 //
@@ -123,7 +122,7 @@ func TestHeadStorage(t *testing.T) {
 //			t.Fatalf("tx #%d [%x]: transaction not found", i, tx.Hash())
 //		} else {
 //			if hash != block.Hash() || number != block.NumberU64() || index != uint64(i) {
-//				t.Fatalf("tx #%d [%x]: positional metadata mismatch: have %x/%d/%d, want %x/%v/%v", i, tx.Hash(), hash, number, index, block.Hash(), block.NumberU64(), i)
+//				t.Fatalf("tx #%d [%x]: positional node_metadata mismatch: have %x/%d/%d, want %x/%v/%v", i, tx.Hash(), hash, number, index, block.Hash(), block.NumberU64(), i)
 //			}
 //			if tx.String() != txn.String() {
 //				t.Fatalf("tx #%d [%x]: transaction mismatch: have %v, want %v", i, tx.Hash(), txn, tx)

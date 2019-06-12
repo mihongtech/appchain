@@ -6,7 +6,6 @@ import (
 
 	"reflect"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/mihongtech/appchain/rpc/rpcobject"
 	"github.com/mihongtech/linkchain-core/common/math"
 	"github.com/mihongtech/linkchain-core/common/util/log"
@@ -68,10 +67,10 @@ func getBlockByHash(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 
 func getBlockObject(block *node_meta.Block) *rpcobject.BlockRSP {
 
-	buffer, _ := proto.Marshal(block.Serialize())
+	buffer, _ := block.EncodeToBytes()
 	txids := make([]string, 0)
-	for i := range block.TXs {
-		txids = append(txids, block.TXs[i].GetTxID().String())
+	for i := range block.TXs.Txs {
+		txids = append(txids, block.TXs.Txs[i].GetTxID().String())
 	}
 
 	return &rpcobject.BlockRSP{

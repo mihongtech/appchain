@@ -2,6 +2,7 @@ package rpcserver
 
 import (
 	"errors"
+	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/linkchain-core/common/math"
 	"github.com/mihongtech/linkchain-core/common/util/log"
 	"reflect"
@@ -26,6 +27,6 @@ func getTxByHash(s *Server, cmd interface{}, closeChan <-chan struct{}) (interfa
 		log.Error("getTxByHash ", "error", err)
 		return nil, errors.New("getTxByHash failed")
 	}
-
-	return &rpcobject.TransactionWithIDRSP{transaction.GetTxID().GetString(), transaction}, nil
+	appTx, err := meta.ConvertToAppTX(*transaction)
+	return &rpcobject.TransactionWithIDRSP{transaction.GetTxID().GetString(), &appTx}, err
 }

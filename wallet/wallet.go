@@ -3,6 +3,8 @@ package wallet
 import (
 	"encoding/hex"
 	"errors"
+	"github.com/mihongtech/appchain/bcsi"
+	"github.com/mihongtech/appchain/storage/state"
 	"path/filepath"
 
 	"github.com/mihongtech/appchain/app/context"
@@ -22,6 +24,7 @@ type Wallet struct {
 	Name     string
 	DataDir  string
 	accounts map[string]meta.Account
+	bcsiAPI  *bcsi.BCSIServer
 }
 
 func NewWallet() *Wallet {
@@ -36,7 +39,7 @@ func (w *Wallet) Setup(i interface{}) bool {
 	w.DataDir = globalConfig.DataDir
 	path := w.instanceDir(w.DataDir)
 	w.keystore = keystore.NewKeyStore(path, keystore.StandardScryptN, keystore.StandardScryptP)
-
+	w.bcsiAPI = i.(*context.Context).BCSIAPI
 	return true
 }
 
@@ -121,11 +124,18 @@ func (w *Wallet) GetAccount(key string) (*meta.Account, error) {
 }
 
 func (w *Wallet) queryAccount(id node_meta.Address) (meta.Account, error) {
-	stateDB, err := w.nodeAPI.StateAt(w.nodeAPI.GetBestBlock().Header.Status)
+	bestBlock := w.bcsiAPI.CurrentBlock.Load().(*node_meta.Block)
+	if bestBlock == nil {
+		return meta.Account{}, errors.New("best block have not store")
+	}
+	root, err := w.bcsiAPI.GetBlockState(*bestBlock.GetBlockID())
 	if err != nil {
 		return meta.Account{}, err
 	}
-
+	stateDB, err := state.New(root, w.bcsiAPI.Db)
+	if err != nil {
+		return meta.Account{}, err
+	}
 	stateObject := stateDB.GetObject(meta.GetAccountHash(id))
 	if stateObject == nil {
 		return meta.Account{}, errors.New("can not find IAccount")

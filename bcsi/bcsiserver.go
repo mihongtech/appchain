@@ -3,6 +3,7 @@ package bcsi
 import (
 	"errors"
 	"github.com/bliblicode/library/log"
+	"github.com/mihongtech/appchain/core/meta"
 
 	"sync/atomic"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/mihongtech/linkchain-core/common/lcdb"
 	"github.com/mihongtech/linkchain-core/common/math"
 	node_meta "github.com/mihongtech/linkchain-core/core/meta"
-	"github.com/mihongtech/linkchain-core/node/bcsi"
 	"github.com/mihongtech/linkchain-core/node/chain"
 )
 
@@ -22,7 +22,7 @@ const (
 )
 
 type BCSIServer struct {
-	db          lcdb.Database
+	Db          lcdb.Database
 	interpreter interpreter.Interpreter
 
 	chain chain.ChainReader
@@ -30,13 +30,13 @@ type BCSIServer struct {
 	cacheState  map[node_meta.BlockID]*state.StateDB
 	statusCache *lru.Cache // Cache for status of block
 
-	currentBlock atomic.Value
+	CurrentBlock atomic.Value
 }
 
-func NewBCSIServer(db lcdb.Database, interpreter interpreter.Interpreter) bcsi.BCSI {
+func NewBCSIServer(db lcdb.Database, interpreter interpreter.Interpreter) *BCSIServer {
 	statusCache, _ := lru.New(statusCacheLimit)
 	cacheState := make(map[node_meta.BlockID]*state.StateDB)
-	return &BCSIServer{db: db, interpreter: interpreter, cacheState: cacheState, statusCache: statusCache}
+	return &BCSIServer{Db: db, interpreter: interpreter, cacheState: cacheState, statusCache: statusCache}
 }
 
 func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, error) {
@@ -45,7 +45,7 @@ func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, erro
 	if err != nil {
 		return math.Hash{}, nil
 	}
-	stateDB, err := state.New(*block.GetStatus(), s.db)
+	stateDB, err := state.New(*block.GetStatus(), s.Db)
 	if err != nil {
 		return math.Hash{}, err
 	}
@@ -53,12 +53,12 @@ func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, erro
 }
 
 func (s *BCSIServer) UpdateChain(head *node_meta.Block) error {
-	if s.currentBlock.Load() == nil {
+	if s.CurrentBlock.Load() == nil {
 		log.Info("BCSIServer", "UpdateChain", "init chain", "best block", head.GetBlockID().String())
 	} else {
 		log.Info("BCSIServer", "UpdateChain", "update chain", "best block", head.GetBlockID().String())
 	}
-	s.currentBlock.Store(head)
+	s.CurrentBlock.Store(head)
 	return nil
 }
 
@@ -67,12 +67,11 @@ func (s *BCSIServer) ProcessBlock(block *node_meta.Block) error {
 	if _, ok := s.statusCache.Get(*block.GetBlockID()); ok {
 		return errors.New(ErrorProcessed)
 	}
-	stateDB, err := state.New(*block.GetStatus(), s.db)
+	stateDB, err := state.New(*block.GetStatus(), s.Db)
 	if err != nil {
 		return err
 	}
-	//TODO need encode node-tx to app-tx
-	err, _ = s.interpreter.ProcessBlockState(&block.Header, nil, stateDB, s.chain, s.interpreter)
+	err, _ = s.interpreter.ProcessBlockState(&block.Header, AppTransactionsConvert(&block.TXs), stateDB, s.chain, s.interpreter)
 	if err != nil {
 		return err
 	}
@@ -96,7 +95,11 @@ func (s *BCSIServer) CheckBlock(block *node_meta.Block) error {
 }
 
 func (s *BCSIServer) CheckTx(transaction node_meta.Transaction) error {
-	return s.interpreter.CheckTx(nil)
+	tx, err := meta.ConvertToAppTX(transaction)
+	if err != nil {
+		return err
+	}
+	return s.interpreter.CheckTx(&tx)
 }
 
 func (s *BCSIServer) FilterTx(txs []node_meta.Transaction) []node_meta.Transaction {

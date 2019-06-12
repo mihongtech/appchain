@@ -22,7 +22,7 @@ func NewStrorage(dataDir string) *Storage {
 
 	//load genesis from storage
 	var err error
-	s.Name = "chaindata"
+	s.Name = "appchaindata"
 	s.dataDir = dataDir
 	s.db, err = s.OpenDatabase("fullchain", 1024, 256)
 	if err != nil {
