@@ -1,10 +1,8 @@
 package rpcserver
 
 import (
-	"bitbucket.org/rollchain/node"
 	"encoding/hex"
 	"fmt"
-
 	"reflect"
 
 	"github.com/mihongtech/appchain/core/meta"
@@ -117,7 +115,7 @@ func sendMoneyTransaction(s *Server, cmd interface{}, closeChan <-chan struct{})
 	}
 
 	if err = GetNodeAPI(s).ProcessTx(transaction); err == nil {
-		GetNodeAPI(s).GetTxEvent().Send(node.TxEvent{transaction})
+		//GetNodeAPI(s).GetTxEvent().Send(node.TxEvent{transaction})
 	}
 
 	return &rpcobject.TransactionWithIDRSP{transaction.GetTxID().GetString(), transaction}, err

@@ -1,6 +1,8 @@
 package rpcserver
 
 import (
+	"github.com/mihongtech/linkchain-core/node"
+	"github.com/mihongtech/linkchain-core/node/net"
 	"reflect"
 
 	"github.com/mihongtech/appchain/rpc/rpcobject"
@@ -59,4 +61,11 @@ var cmdPool = map[string]reflect.Type{
 
 func GetWalletAPI(s *Server) *wallet.Wallet {
 	return s.appContext.WalletAPI.(*wallet.Wallet)
+}
+func GetNodeAPI(s *Server) *node.CoreAPI {
+	return s.appContext.NodeAPI
+}
+
+func GetP2PAPI(s *Server) net.P2PNet {
+	return s.appContext.NodeAPI
 }
