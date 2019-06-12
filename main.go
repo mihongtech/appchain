@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/mihongtech/appchain/app"
-	"github.com/mihongtech/appchain/common/util/log"
+
 	"github.com/mihongtech/appchain/config"
 )
 

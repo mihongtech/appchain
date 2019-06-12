@@ -146,14 +146,16 @@ func (r *ReceiptForStorage) Serialize() serialize.SerializeStream {
 	for i := range r.Logs {
 		logs = append(logs, (*meta.LogForStorage)(r.Logs[i]).Serialize().(*protobuf.LogForStorage))
 	}
+	bTxHash, _ := r.TxHash.EncodeToBytes()
+	bContractAddress, _ := r.ContractAddress.EncodeToBytes()
 	receipt := protobuf.ReceiptForStorage{
 		PostStateOrStatus: proto.NewBuffer((*Receipt)(r).statusEncoding()).Bytes(),
 		CumulativeGasUsed: proto.Uint64(r.CumulativeGasUsed),
 		Bloom:             proto.NewBuffer(r.Bloom.Bytes()).Bytes(),
 		Logs:              logs,
-		TxHash:            r.TxHash.Serialize().(*protobuf.Hash),
+		TxHash:            bTxHash,
 		GasUsed:           proto.Uint64(r.GasUsed),
-		ContractAddress:   r.ContractAddress.Serialize().(*protobuf.AccountID),
+		ContractAddress:   bContractAddress,
 	}
 	return &receipt
 }
@@ -176,10 +178,10 @@ func (r *ReceiptForStorage) Deserialize(s serialize.SerializeStream) error {
 
 		r.Logs = append(r.Logs, log.ConvertToLog())
 	}
-	if err := r.TxHash.Deserialize(data.TxHash); err != nil {
+	if err := r.TxHash.DecodeFromBytes(data.TxHash); err != nil {
 		return err
 	}
-	if err := r.ContractAddress.Deserialize(data.ContractAddress); err != nil {
+	if err := r.ContractAddress.DecodeFromBytes(data.ContractAddress); err != nil {
 		return err
 	}
 

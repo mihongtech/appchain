@@ -5,16 +5,14 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"github.com/mihongtech/linkchain-core/common/lcdb"
-	"github.com/mihongtech/linkchain-core/common/util/log"
-
 	"math/big"
 
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core"
-	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/protobuf"
+	"github.com/mihongtech/linkchain-core/common/lcdb"
 	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 
 	"github.com/golang/protobuf/proto"
@@ -158,13 +156,9 @@ func GetBlock(db DatabaseReader, hash math.Hash, number uint64) *node_meta.Block
 	if len(data) == 0 {
 		return nil
 	}
-	var b protobuf.Block
-	if err := proto.Unmarshal(data, &b); err != nil {
-		log.Error("decode block failed")
-		return nil
-	}
+
 	block := &node_meta.Block{}
-	block.Deserialize(&b)
+	block.DecodeFromBytes(data)
 	return block
 }
 
@@ -190,7 +184,7 @@ func GetTxLookupEntry(db DatabaseReader, hash math.Hash) (math.Hash, uint64, uin
 
 // GetTransaction retrieves a specific transaction from the database, along with
 // its added positional metadata.
-func GetTransaction(db DatabaseReader, hash math.Hash) (*meta.Transaction, math.Hash, uint64, uint64) {
+func GetTransaction(db DatabaseReader, hash math.Hash) (*node_meta.Transaction, math.Hash, uint64, uint64) {
 	// Retrieve the lookup metadata and resolve the transaction from the body
 	blockHash, blockNumber, txIndex := GetTxLookupEntry(db, hash)
 	// log.Info("get tx id", "blockHash", blockHash)

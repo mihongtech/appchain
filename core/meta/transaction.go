@@ -550,3 +550,19 @@ func TxDifference(a, b []Transaction) (keep []Transaction) {
 
 	return keep
 }
+
+func ConvertToAppTX(tx node_meta.Transaction) (Transaction, error) {
+	appTx := Transaction{}
+	err := appTx.DecodeFromBytes(tx.Data)
+	return appTx, err
+}
+
+func ConvertToNodeTX(tx Transaction) (node_meta.Transaction, error) {
+	nodeTx := node_meta.Transaction{}
+	buffer, err := tx.EncodeToBytes()
+	if err != nil {
+		return nodeTx, err
+	}
+	copy(nodeTx.Data, buffer)
+	return nodeTx, nil
+}
