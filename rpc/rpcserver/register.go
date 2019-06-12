@@ -22,12 +22,6 @@ var handlerPool = map[string]commandHandler{
 	"getBlockByHeight": getBlockByHeight,
 	"getBlockByHash":   getBlockByHash,
 
-	//miner
-	"getMineInfo": getMineInfo,
-	"startMine":   startMine,
-	"stopMine":    stopMine,
-	"mine":        mine,
-
 	//wallet
 	"exportAccount": exportAccount,
 	"importAccount": importAccount,
@@ -43,13 +37,6 @@ var handlerPool = map[string]commandHandler{
 
 	//shutdown
 	"shutdown": shutdown,
-
-	//contract
-	"publishContract":    publishContract,
-	"callContract":       callContract,
-	"getCode":            getCode,
-	"call":               call,
-	"transactionReceipt": GetTransactionReceipt,
 }
 
 var cmdPool = map[string]reflect.Type{
@@ -68,13 +55,6 @@ var cmdPool = map[string]reflect.Type{
 
 	"importAccount": reflect.TypeOf((*rpcobject.ImportAccountCmd)(nil)),
 	"exportAccount": reflect.TypeOf((*rpcobject.ExportAccountCmd)(nil)),
-
-	//contract
-	"publishContract":    reflect.TypeOf((*rpcobject.PublishContractCmd)(nil)),
-	"callContract":       reflect.TypeOf((*rpcobject.CallContractCmd)(nil)),
-	"call":               reflect.TypeOf((*rpcobject.CallCmd)(nil)),
-	"getCode":            reflect.TypeOf((*rpcobject.GetCodeCmd)(nil)),
-	"transactionReceipt": reflect.TypeOf((*rpcobject.GetTransactionReceiptCmd)(nil)),
 }
 
 func GetWalletAPI(s *Server) *wallet.Wallet {

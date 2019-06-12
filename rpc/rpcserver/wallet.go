@@ -1,15 +1,17 @@
 package rpcserver
 
 import (
+	"bitbucket.org/rollchain/node"
 	"encoding/hex"
 	"fmt"
+
 	"reflect"
 
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/helper"
-	"github.com/mihongtech/appchain/node"
 	"github.com/mihongtech/appchain/rpc/rpcobject"
+	"github.com/mihongtech/linkchain-core/common/util/log"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 func getWalletInfo(s *Server, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
@@ -45,7 +47,6 @@ func getAccountInfo(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 	}
 
 	//populate account info
-	best := GetNodeAPI(s).GetBestBlock()
 	utxos := account.UTXOs
 	txArray := make([]*rpcobject.TxRSP, 0, len(utxos))
 
@@ -69,9 +70,6 @@ func getAccountInfo(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 		account.GetAccountID().String(),
 		account.AccountType,
 		account.GetAmount().GetInt64(),
-		account.SecurityId.String(),
-		account.GetClearTime(best.GetHeight()),
-		account.Clear,
 		txArray,
 		account.StorageRoot.String(),
 		account.CodeHash.String(),
@@ -146,7 +144,7 @@ func exportAccount(s *Server, cmd interface{}, closeChan <-chan struct{}) (inter
 		fmt.Println("Type error:", reflect.TypeOf(cmd))
 		return nil, nil
 	}
-	accountId, err := meta.NewAccountIdFromStr(c.AccountId)
+	accountId, err := node_meta.NewAddressFromStr(c.AccountId)
 	if err != nil {
 		return "", err
 	}

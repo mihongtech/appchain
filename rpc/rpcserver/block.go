@@ -3,14 +3,14 @@ package rpcserver
 import (
 	"encoding/hex"
 	"fmt"
+
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/mihongtech/appchain/common/math"
-	"github.com/mihongtech/appchain/core/meta"
-
-	"github.com/mihongtech/appchain/common/util/log"
 	"github.com/mihongtech/appchain/rpc/rpcobject"
+	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/util/log"
+	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 func getBestBlock(s *Server, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
@@ -66,7 +66,7 @@ func getBlockByHash(s *Server, cmd interface{}, closeChan <-chan struct{}) (inte
 	return b, nil
 }
 
-func getBlockObject(block *meta.Block) *rpcobject.BlockRSP {
+func getBlockObject(block *node_meta.Block) *rpcobject.BlockRSP {
 
 	buffer, _ := proto.Marshal(block.Serialize())
 	txids := make([]string, 0)

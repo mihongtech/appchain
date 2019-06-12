@@ -29,8 +29,8 @@ import (
 	"time"
 
 	"github.com/mihongtech/appchain/accounts"
-	"github.com/mihongtech/appchain/common/btcec"
 	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/linkchain-core/common/btcec"
 
 	"github.com/pborman/uuid"
 )

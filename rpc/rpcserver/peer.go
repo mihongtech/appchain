@@ -2,11 +2,11 @@ package rpcserver
 
 import (
 	"fmt"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	"reflect"
 
-	"github.com/mihongtech/appchain/common/util/log"
-	p2p_node "github.com/mihongtech/appchain/node/net/p2p/discover"
 	"github.com/mihongtech/appchain/rpc/rpcobject"
+	p2p_node "github.com/mihongtech/linkchain-core/node/net/p2p/discover"
 )
 
 func selfPeer(s *Server, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
