@@ -1,23 +1,19 @@
 package app
 
 import (
-	"github.com/mihongtech/appchain/bcsi"
-	"github.com/mihongtech/linkchain-core/common/util/log"
-	"github.com/mihongtech/linkchain-core/storage"
-
 	"time"
 
 	"github.com/mihongtech/appchain/app/context"
-
-	"github.com/mihongtech/appchain/config"
-
+	"github.com/mihongtech/appchain/bcsi"
 	"github.com/mihongtech/appchain/business/interpreter"
-
 	"github.com/mihongtech/appchain/business/normal"
+	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/rpc/rpcserver"
 	"github.com/mihongtech/appchain/wallet"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	"github.com/mihongtech/linkchain-core/node"
 	node_config "github.com/mihongtech/linkchain-core/node/config"
+	"github.com/mihongtech/linkchain-core/storage"
 )
 
 var (
@@ -40,7 +36,7 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	}
 
 	//create bcsi service
-	bcsiServer := &bcsi.BCSIServer{s.GetDB()}
+	bcsiServer := bcsi.NewBCSIServer(s.GetDB(), chooseInterpreterAPI(appContext.Config.InterpreterAPI))
 
 	//create core service
 	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
