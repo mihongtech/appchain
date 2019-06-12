@@ -2,18 +2,20 @@ package bcsi
 
 import (
 	"errors"
-	"github.com/bliblicode/library/log"
-	"github.com/mihongtech/appchain/core/meta"
-
+	"github.com/mihongtech/appchain/config"
+	"github.com/mihongtech/appchain/helper"
 	"sync/atomic"
 
-	"github.com/hashicorp/golang-lru"
 	"github.com/mihongtech/appchain/business/interpreter"
+	"github.com/mihongtech/appchain/core/meta"
 	"github.com/mihongtech/appchain/storage/state"
 	"github.com/mihongtech/linkchain-core/common/lcdb"
 	"github.com/mihongtech/linkchain-core/common/math"
+	"github.com/mihongtech/linkchain-core/common/util/log"
 	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 	"github.com/mihongtech/linkchain-core/node/chain"
+
+	"github.com/hashicorp/golang-lru"
 )
 
 const (
@@ -37,6 +39,19 @@ func NewBCSIServer(db lcdb.Database, interpreter interpreter.Interpreter) *BCSIS
 	statusCache, _ := lru.New(statusCacheLimit)
 	cacheState := make(map[node_meta.BlockID]*state.StateDB)
 	return &BCSIServer{Db: db, interpreter: interpreter, cacheState: cacheState, statusCache: statusCache}
+}
+
+func (s *BCSIServer) Setup(i interface{}) bool {
+	s.chain = i.(chain.ChainReader)
+	return true
+}
+
+func (s *BCSIServer) Start() bool {
+	return true
+}
+
+func (s *BCSIServer) Stop() {
+
 }
 
 func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, error) {
@@ -103,5 +118,14 @@ func (s *BCSIServer) CheckTx(transaction node_meta.Transaction) error {
 }
 
 func (s *BCSIServer) FilterTx(txs []node_meta.Transaction) []node_meta.Transaction {
+	height := 1
+	block := s.CurrentBlock.Load().(*node_meta.Block)
+	if block != nil {
+		height = int(block.GetHeight())
+	}
+	signer, _ := node_meta.NewAddressFromStr(config.FirstPubMiner)
+	coinbase := helper.CreateCoinBaseTx(*signer, meta.NewAmount(config.DefaultBlockReward), uint32(height+1))
+	nodeTx, _ := meta.ConvertToNodeTX(*coinbase)
+	txs = append(txs, nodeTx)
 	return txs
 }

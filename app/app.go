@@ -52,6 +52,9 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	}
 	nodeSvc = node.NewNode(nodecfg.BaseConfig)
 
+	appContext.NodeAPI = node.NewPublicCoreAPI(nodeSvc)
+	appContext.BCSIAPI.Setup(appContext.NodeAPI)
+
 	//create wallet
 	walletSvc = wallet.NewWallet()
 
@@ -59,8 +62,6 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	if !nodeSvc.Setup(&nodecfg) {
 		return false
 	}
-	//consensus api init
-	appContext.NodeAPI = node.NewPublicCoreAPI(nodeSvc)
 
 	//wallet init
 	if !walletSvc.Setup(&appContext) {

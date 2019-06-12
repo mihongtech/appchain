@@ -563,6 +563,6 @@ func ConvertToNodeTX(tx Transaction) (node_meta.Transaction, error) {
 	if err != nil {
 		return nodeTx, err
 	}
-	copy(nodeTx.Data, buffer)
+	nodeTx.Data = buffer
 	return nodeTx, nil
 }
