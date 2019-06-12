@@ -39,7 +39,7 @@ func (t *Ticket) GetIndex() uint32 {
 
 //Serialize/Deserialize
 func (t *Ticket) Serialize() serialize.SerializeStream {
-	txid := t.Txid.Serialize().(*protobuf.Hash)
+	txid, _ := t.Txid.EncodeToBytes()
 	ticket := protobuf.Ticket{
 		Txid:  txid,
 		Index: proto.Uint32(t.Index),
@@ -49,8 +49,8 @@ func (t *Ticket) Serialize() serialize.SerializeStream {
 
 func (t *Ticket) Deserialize(s serialize.SerializeStream) error {
 	data := *s.(*protobuf.Ticket)
-	err := t.Txid.Deserialize(data.Txid)
-	if err != nil {
+
+	if err := t.Txid.DecodeFromBytes(data.Txid); err != nil {
 		return err
 	}
 	t.Index = *data.Index
@@ -96,7 +96,7 @@ func (fc *FromCoin) GetId() node_meta.Address {
 
 //Serialize/Deserialize
 func (fc *FromCoin) Serialize() serialize.SerializeStream {
-	id := fc.Id.Serialize().(*protobuf.AccountID)
+	id, _ := fc.Id.EncodeToBytes()
 
 	ticket := make([]*protobuf.Ticket, 0)
 
@@ -113,7 +113,7 @@ func (fc *FromCoin) Serialize() serialize.SerializeStream {
 
 func (fc *FromCoin) Deserialize(s serialize.SerializeStream) error {
 	data := *s.(*protobuf.FromCoin)
-	err := fc.Id.Deserialize(data.Id)
+	err := fc.Id.DecodeFromBytes(data.Id)
 	if err != nil {
 		return err
 	}
@@ -217,8 +217,9 @@ func (tc *ToCoin) CheckValue() bool {
 
 //Serialize/Deserialize
 func (tc *ToCoin) Serialize() serialize.SerializeStream {
+	id, _ := tc.Id.EncodeToBytes()
 	peer := &protobuf.ToCoin{
-		Id:    tc.Id.Serialize().(*protobuf.AccountID),
+		Id:    id,
 		Value: proto.NewBuffer(tc.Value.GetBytes()).Bytes(),
 	}
 	return peer
@@ -227,7 +228,7 @@ func (tc *ToCoin) Serialize() serialize.SerializeStream {
 func (tc *ToCoin) Deserialize(s serialize.SerializeStream) error {
 	data := *s.(*protobuf.ToCoin)
 	tc.Id = node_meta.Address{}
-	if err := tc.Id.Deserialize(data.Id); err != nil {
+	if err := tc.Id.DecodeFromBytes(data.Id); err != nil {
 		return err
 	}
 
@@ -453,10 +454,11 @@ func (tx *Transaction) Serialize() serialize.SerializeStream {
 	from := tx.From.Serialize().(*protobuf.TransactionFrom)
 	to := tx.To.Serialize().(*protobuf.TransactionTo)
 
-	signature := make([]*protobuf.Signature, 0)
+	signature := make([][]byte, 0)
 
-	for _, content := range tx.Sign {
-		signature = append(signature, content.Serialize().(*protobuf.Signature))
+	for i, _ := range tx.Sign {
+		s, _ := tx.Sign[i].EncodeToBytes()
+		signature = append(signature, s)
 	}
 
 	t := protobuf.Transaction{
@@ -488,7 +490,7 @@ func (tx *Transaction) Deserialize(s serialize.SerializeStream) error {
 	for _, cointent := range data.Sign {
 		nSignatrue := node_meta.Signature{}
 
-		if err := nSignatrue.Deserialize(cointent); err != nil {
+		if err := nSignatrue.DecodeFromBytes(cointent); err != nil {
 			return err
 		}
 		tx.Sign = append(tx.Sign, nSignatrue)
@@ -518,6 +520,18 @@ func (tx *Transaction) String() string {
 		return err.Error()
 	}
 	return string(data)
+}
+
+func (tx *Transaction) EncodeToBytes() ([]byte, error) {
+	return proto.Marshal(tx.Serialize())
+}
+
+func (tx *Transaction) DecodeFromBytes(buff []byte) error {
+	var protoTx protobuf.Transaction
+	if err := proto.Unmarshal(buff, &protoTx); err != nil {
+		return err
+	}
+	return tx.Deserialize(&protoTx)
 }
 
 func TxDifference(a, b []Transaction) (keep []Transaction) {

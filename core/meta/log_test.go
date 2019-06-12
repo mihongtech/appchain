@@ -2,16 +2,11 @@ package meta
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/mihongtech/linkchain-core/common/math"
 	"reflect"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/mihongtech/linkchain-core/common/hexutil"
-	node_meta "github.com/mihongtech/linkchain-core/core/meta"
 )
 
 var unmarshalLogTests = map[string]struct {

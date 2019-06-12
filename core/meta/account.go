@@ -169,18 +169,19 @@ func (a *Account) Serialize() serialize.SerializeStream {
 		}
 		us = append(us, u)
 	}
+	bId, _ := a.Id.EncodeToBytes()
 	s := &protobuf.Account{
-		Id:    a.Id.Serialize().(*protobuf.AccountID),
+		Id:    bId,
 		Type:  proto.Uint32(a.AccountType),
 		Utxos: us,
 	}
 
 	if !a.CodeHash.IsEmpty() {
-		s.CodeHash = a.CodeHash.Serialize().(*protobuf.Hash)
+		s.CodeHash, _ = a.CodeHash.EncodeToBytes()
 	}
 
 	if !a.StorageRoot.IsEmpty() {
-		s.StorageRoot = a.StorageRoot.Serialize().(*protobuf.Hash)
+		s.StorageRoot, _ = a.StorageRoot.EncodeToBytes()
 	}
 
 	return s
@@ -189,18 +190,18 @@ func (a *Account) Serialize() serialize.SerializeStream {
 
 func (a *Account) Deserialize(s serialize.SerializeStream) error {
 	data := s.(*protobuf.Account)
-	if err := a.Id.Deserialize(data.Id); err != nil {
+	if err := a.Id.DecodeFromBytes(data.Id); err != nil {
 		return err
 	}
 
 	if data.StorageRoot != nil {
-		if err := a.StorageRoot.Deserialize(data.StorageRoot); err != nil {
+		if err := a.StorageRoot.DecodeFromBytes(data.StorageRoot); err != nil {
 			return err
 		}
 	}
 
 	if data.CodeHash != nil {
-		if err := a.CodeHash.Deserialize(data.CodeHash); err != nil {
+		if err := a.CodeHash.DecodeFromBytes(data.CodeHash); err != nil {
 			return err
 		}
 	}

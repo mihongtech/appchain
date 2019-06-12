@@ -181,6 +181,26 @@ func TestTransaction_Serialize(t *testing.T) {
 	//t.Log("tx Serialize", "txid", tx.GetTxID().String(), "buffer", hex.EncodeToString(buffer))
 }
 
+func TestTransaction_Encode(t *testing.T) {
+	str := "080110011a420a400a160a148a1a6718e0033aa160b0ce8dedc4a95d762e64f212260a220a20640fe47bb4898f552ef35ea64026fd7304960254269b9ac3dabcdd6cfc126e5e1000221d0a1b0a160a148a1a6718e0033aa160b0ce8dedc4a95d762e64f212010a2a480a46304402202a4ca04c8bc3f52ea2dbcc2c3b5d6ea87ea757b4ae8e42670d5c0ee0cbc1d312022034faaf9b8566f778dcf5f3709ad65c2502f2d1422fade19b9741677eed55f005"
+
+	tx := getTestTransaction()
+	buffer, err := tx.EncodeToBytes()
+	unittest.NotError(t, err)
+	unittest.Equal(t, str, hex.EncodeToString(buffer))
+	//t.Log("tx Serialize", "txid", tx.GetTxID().String(), "buffer", hex.EncodeToString(buffer))
+}
+
+func TestTransaction_Decode(t *testing.T) {
+	txid, _ := math.NewHashFromStr("4c93c46476af3464e67e0684aae23237a30b0eb8fd094dc715c27cc832e1a454")
+	str := "080110011a420a400a160a148a1a6718e0033aa160b0ce8dedc4a95d762e64f212260a220a20640fe47bb4898f552ef35ea64026fd7304960254269b9ac3dabcdd6cfc126e5e1000221d0a1b0a160a148a1a6718e0033aa160b0ce8dedc4a95d762e64f212010a2a480a46304402202a4ca04c8bc3f52ea2dbcc2c3b5d6ea87ea757b4ae8e42670d5c0ee0cbc1d312022034faaf9b8566f778dcf5f3709ad65c2502f2d1422fade19b9741677eed55f005"
+	buffer, _ := hex.DecodeString(str)
+	newTx := Transaction{}
+	err := newTx.DecodeFromBytes(buffer)
+	unittest.NotError(t, err)
+	unittest.Equal(t, txid, newTx.GetTxID())
+}
+
 //Testing the method 'Deserialize' of transaction without sign.
 func TestTransaction_Deserialize_Nil_Sign(t *testing.T) {
 	txid, _ := math.NewHashFromStr("3361426edc0980b83404e2f5927d6579040fa26958d77cd5e35bc1fd1e084cf5")
@@ -358,13 +378,8 @@ func TestSignature_Deserialize(t *testing.T) {
 	hash, _ := math.NewHashFromStr("6045e1be843b2d7292a7ecd512df315d81e77b7817dbd1c6cb379926f4d235e9")
 	buffer, _ := hex.DecodeString("0a473045022100b3b46c98236f2760344e5c9aaec44e7463f2435858c396fd731eed0e03f28d2502205cee7691880636a5643b5cc24fc05196ec2184939fccf289753efaaefe279516")
 
-	signature := &protobuf.Signature{}
-
-	err := proto.Unmarshal(buffer, signature)
-	unittest.NotError(t, err)
-
 	newSignature := node_meta.Signature{}
-	err = newSignature.Deserialize(signature)
+	err := newSignature.DecodeFromBytes(buffer)
 	unittest.NotError(t, err)
 
 	newBuffer, err := proto.Marshal(newSignature.Serialize())

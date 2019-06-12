@@ -67,12 +67,14 @@ type protoStorageLog struct {
 
 //Serialize/Deserialize
 func (l *Log) Serialize() serialize.SerializeStream {
-	topics := make([]*protobuf.Hash, 0)
+	topics := make([][]byte, 0)
 	for i := range l.Topics {
-		topics = append(topics, l.Topics[i].Serialize().(*protobuf.Hash))
+		topic, _ := l.Topics[i].EncodeToBytes()
+		topics = append(topics, topic)
 	}
+	bAddress, _ := l.Address.EncodeToBytes()
 	log := protobuf.Log{
-		Address: l.Address.Serialize().(*protobuf.AccountID),
+		Address: bAddress,
 		Topics:  topics,
 		Data:    proto.NewBuffer(l.Data).Bytes(),
 	}
@@ -81,7 +83,7 @@ func (l *Log) Serialize() serialize.SerializeStream {
 
 func (l *Log) Deserialize(s serialize.SerializeStream) error {
 	data := s.(*protobuf.Log)
-	if err := l.Address.Deserialize(data.Address); err != nil {
+	if err := l.Address.DecodeFromBytes(data.Address); err != nil {
 		return err
 	}
 	l.Data = l.Data[:0]
@@ -90,7 +92,7 @@ func (l *Log) Deserialize(s serialize.SerializeStream) error {
 	l.Topics = l.Topics[:0]
 	for i := range data.Topics {
 		topic := math.Hash{}
-		if err := topic.Deserialize(data.Topics[i]); err != nil {
+		if err := topic.DecodeFromBytes(data.Topics[i]); err != nil {
 			return err
 		}
 		l.Topics = append(l.Topics, topic)
@@ -105,19 +107,23 @@ type LogForStorage Log
 
 //Serialize/Deserialize
 func (l *LogForStorage) Serialize() serialize.SerializeStream {
-	topics := make([]*protobuf.Hash, 0)
+	topics := make([][]byte, 0)
 
 	for i := range l.Topics {
-		topics = append(topics, l.Topics[i].Serialize().(*protobuf.Hash))
+		topic, _ := l.Topics[i].EncodeToBytes()
+		topics = append(topics, topic)
 	}
+	bAddress, _ := l.Address.EncodeToBytes()
+	bBlockHash, _ := l.BlockHash.EncodeToBytes()
+	bTxHash, _ := l.TxHash.EncodeToBytes()
 	log := protobuf.LogForStorage{
-		Address:     l.Address.Serialize().(*protobuf.AccountID),
+		Address:     bAddress,
 		Topics:      topics,
 		Data:        proto.NewBuffer(l.Data).Bytes(),
 		BlockNumber: proto.Uint64(l.BlockNumber),
-		BlockHash:   l.BlockHash.Serialize().(*protobuf.Hash),
+		BlockHash:   bBlockHash,
 		Index:       proto.Uint32(uint32(l.Index)),
-		TxHash:      l.TxHash.Serialize().(*protobuf.Hash),
+		TxHash:      bTxHash,
 		TxIndex:     proto.Uint32(uint32(l.TxIndex)),
 	}
 	return &log
@@ -129,14 +135,14 @@ func (l *LogForStorage) Deserialize(s serialize.SerializeStream) error {
 	l.Index = uint(*data.Index)
 	l.TxIndex = uint(*data.TxIndex)
 	l.BlockNumber = *data.BlockNumber
-	if err := l.TxHash.Deserialize(data.TxHash); err != nil {
+	if err := l.TxHash.DecodeFromBytes(data.TxHash); err != nil {
 		return err
 	}
-	if err := l.BlockHash.Deserialize(data.BlockHash); err != nil {
+	if err := l.BlockHash.DecodeFromBytes(data.BlockHash); err != nil {
 		return err
 	}
 
-	if err := l.Address.Deserialize(data.Address); err != nil {
+	if err := l.Address.DecodeFromBytes(data.Address); err != nil {
 		return err
 	}
 	l.Data = l.Data[:0]
@@ -145,7 +151,7 @@ func (l *LogForStorage) Deserialize(s serialize.SerializeStream) error {
 	l.Topics = l.Topics[:0]
 	for i := range data.Topics {
 		topic := math.Hash{}
-		if err := topic.Deserialize(data.Topics[i]); err != nil {
+		if err := topic.DecodeFromBytes(data.Topics[i]); err != nil {
 			return err
 		}
 		l.Topics = append(l.Topics, topic)

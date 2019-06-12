@@ -5,13 +5,11 @@ import "protobuf/transaction.proto";
 package protobuf;
 
 message Account {
-    required AccountID id = 1;
+    required bytes id = 1;
     required uint32 type = 2;
     repeated UTXO   utxos = 3;
-    optional ClearTime  clear = 4;
-    optional AccountID securityId = 5;
-    optional Hash storageRoot = 6;
-    optional Hash codeHash = 7;
+    optional bytes storageRoot = 6;
+    optional bytes codeHash = 7;
 }
 
 message UTXO {
