@@ -53,6 +53,7 @@ var (
 	oldReceiptsPrefix = []byte("receipts-")
 	oldTxMetaSuffix   = []byte{0x01}
 
+	statusPrefix           = []byte("state")                     // statusPrefix + hash -> status
 	ErrChainConfigNotFound = errors.New("ChainConfig not found") // general config not found error
 )
 
@@ -439,4 +440,24 @@ func DeleteReceipts(db DatabaseDeleter, hash math.Hash, number uint64) {
 // blockReceiptsKey = blockReceiptsPrefix + num (uint64 big endian) + hash
 func blockReceiptsKey(number uint64, hash math.Hash) []byte {
 	return append(append(blockReceiptsPrefix, encodeBlockNumber(number)...), hash.Bytes()...)
+}
+
+// WriteStatus store blockhash -> status.
+func WriteStatus(db lcdb.Putter, id node_meta.BlockID, status math.Hash) error {
+	key := append(statusPrefix, id.CloneBytes()...)
+	value := status.CloneBytes()
+	return db.Put(key, value)
+}
+
+func ReadStatus(db DatabaseReader, id node_meta.BlockID) (math.Hash, error) {
+	key := append(statusPrefix, id.CloneBytes()...)
+	buffer, err := db.Get(key)
+	status := math.Hash{}
+	if err != nil {
+		return status, err
+	}
+	if err = status.SetBytes(buffer); err != nil {
+		return status, err
+	}
+	return status, nil
 }

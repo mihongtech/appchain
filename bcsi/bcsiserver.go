@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/helper"
+	"github.com/mihongtech/appchain/storage"
 	"sync/atomic"
 
 	"github.com/mihongtech/appchain/business/interpreter"
@@ -59,13 +60,17 @@ func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, erro
 	if gensisHash, _ := math.NewHashFromStr("48986ef4c9d044befcf71919cc22f084a61ed04cb2a3310f6f19807ae96a5ed8"); gensisHash.IsEqual(&id) {
 		return math.Hash{}, nil
 	}
-
-	status, ok := s.statusCache.Get(id)
-	if !ok {
-		return math.Hash{}, errors.New("can not find block status")
+	var root math.Hash
+	if status, ok := s.statusCache.Get(id); ok {
+		root = status.(math.Hash)
+	} else {
+		var err error
+		root, err = storage.ReadStatus(s.Db, id)
+		if err != nil {
+			return math.Hash{}, errors.New("can not find block status")
+		}
 	}
-
-	stateDB, err := state.New(status.(math.Hash), s.Db)
+	stateDB, err := state.New(root, s.Db)
 	if err != nil {
 		return math.Hash{}, err
 	}
@@ -107,7 +112,7 @@ func (s *BCSIServer) Commit(id node_meta.BlockID) error {
 	}
 	s.statusCache.Add(id, status)
 	delete(s.cacheState, id)
-	return nil
+	return storage.WriteStatus(s.Db, id, status)
 }
 
 func (s *BCSIServer) CheckBlock(block *node_meta.Block) error {
