@@ -70,7 +70,9 @@ func getBlockObject(block *node_meta.Block) *rpcobject.BlockRSP {
 	buffer, _ := block.EncodeToBytes()
 	txids := make([]string, 0)
 	for i := range block.TXs.Txs {
-		txids = append(txids, block.TXs.Txs[i].GetTxID().String())
+		txid := block.TXs.Txs[i].GetTxID()
+		txids = append(txids, txid.String())
+		log.Error("getBlockObject", "txid", txid.String())
 	}
 
 	return &rpcobject.BlockRSP{
