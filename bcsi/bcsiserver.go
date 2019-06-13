@@ -55,12 +55,17 @@ func (s *BCSIServer) Stop() {
 }
 
 func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, error) {
-	//TODO need use map[blockid]status
-	block, err := s.chain.GetBlockByID(id)
-	if err != nil {
+	//gensis Block passed
+	if gensisHash, _ := math.NewHashFromStr("48986ef4c9d044befcf71919cc22f084a61ed04cb2a3310f6f19807ae96a5ed8"); gensisHash.IsEqual(&id) {
 		return math.Hash{}, nil
 	}
-	stateDB, err := state.New(*block.GetStatus(), s.Db)
+
+	status, ok := s.statusCache.Get(id)
+	if !ok {
+		return math.Hash{}, errors.New("can not find block status")
+	}
+
+	stateDB, err := state.New(status.(math.Hash), s.Db)
 	if err != nil {
 		return math.Hash{}, err
 	}
