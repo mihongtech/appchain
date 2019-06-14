@@ -2,11 +2,11 @@ syntax = "proto2";
 
 package protobuf;
 
-message Transactions {
-    repeated Transaction txs = 1;
+message AppTransactions {
+    repeated AppTransaction txs = 1;
 }
 
-message Transaction {
+message AppTransaction {
     required uint32 version = 1;
     required uint32 type = 2;
     required TransactionFrom from = 3;

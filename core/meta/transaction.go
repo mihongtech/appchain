@@ -461,7 +461,7 @@ func (tx *Transaction) Serialize() serialize.SerializeStream {
 		signature = append(signature, s)
 	}
 
-	t := protobuf.Transaction{
+	t := protobuf.AppTransaction{
 		Version: proto.Uint32(tx.Version),
 		Type:    proto.Uint32(tx.Type),
 		From:    from,
@@ -473,7 +473,7 @@ func (tx *Transaction) Serialize() serialize.SerializeStream {
 }
 
 func (tx *Transaction) Deserialize(s serialize.SerializeStream) error {
-	data := *s.(*protobuf.Transaction)
+	data := *s.(*protobuf.AppTransaction)
 	tx.Version = *data.Version
 	tx.Type = *data.Type
 
@@ -498,7 +498,7 @@ func (tx *Transaction) Deserialize(s serialize.SerializeStream) error {
 
 	tx.Data = data.Data
 
-	pt := protobuf.Transaction{
+	pt := protobuf.AppTransaction{
 		Version: data.Version,
 		Type:    data.Type,
 		From:    data.From,
@@ -527,7 +527,7 @@ func (tx *Transaction) EncodeToBytes() ([]byte, error) {
 }
 
 func (tx *Transaction) DecodeFromBytes(buff []byte) error {
-	var protoTx protobuf.Transaction
+	var protoTx protobuf.AppTransaction
 	if err := proto.Unmarshal(buff, &protoTx); err != nil {
 		return err
 	}
