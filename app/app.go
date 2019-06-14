@@ -29,7 +29,7 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	appContext.Config = globalConfig
 
 	//create storage
-	s := storage.NewStrorage(appContext.Config.DataDir + "app")
+	s := storage.NewStrorage(appContext.Config.DataDir + "/app")
 	if s == nil {
 		log.Error("init storage failed")
 		return false
@@ -40,7 +40,7 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 
 	//create core service
 	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
-		DataDir:            globalConfig.DataDir,
+		DataDir:            globalConfig.DataDir + "/core",
 		GenesisPath:        globalConfig.GenesisPath,
 		ListenAddress:      globalConfig.ListenAddress,
 		NoDiscovery:        globalConfig.NoDiscovery,

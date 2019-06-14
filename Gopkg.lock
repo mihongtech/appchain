@@ -15,23 +15,23 @@
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "UT"
-  revision = "a0d1e3e36d50f61ee6eaab26d7bd246aae1f9ece"
+  revision = "962a206e94e9151fe41bbd6d6464af4ba7168f50"
 
 [[projects]]
-  branch = "master"
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   pruneopts = "UT"
-  revision = "d8f796af33cc11cb798c1aaeb27a4ebc5099927d"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:7d04e000abbf2192851cf54ea7fa1b52a196d8288750164ae2a8c55852eb33ed"
+  digest = "1:e47d51dab652d26c3fba6f8cba403f922d02757a82abdc77e90df7948daf296e"
   name = "github.com/deckarep/golang-set"
   packages = ["."]
   pruneopts = "UT"
-  revision = "699df6a3acf6867538e50931511e9dc403da108a"
+  revision = "cbaa98ba5575e67703b32b4b19f73c91f3c4159e"
+  version = "v1.7.1"
 
 [[projects]]
   digest = "1:586ea76dbd0374d6fb649a91d70d652b7fe0ccffb8910a77468e7702e7901f3d"
@@ -58,12 +58,12 @@
   version = "v0.0.1"
 
 [[projects]]
-  digest = "1:236d7e1bdb50d8f68559af37dbcf9d142d56b431c9b2176d41e2a009b664cda8"
+  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
   name = "github.com/google/uuid"
   packages = ["."]
   pruneopts = "UT"
-  revision = "9b3b1e0f5f99ae461456d768e7d301a7acdaa2d8"
-  version = "v1.1.0"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:d15ee511aa0f56baacc1eb4c6b922fa1c03b38413b6be18166b996d82a0156ea"
@@ -86,7 +86,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:713a1e389f87008a047a01375366479d5df1fc8c8831ecc5b381ab9aafd571be"
+  digest = "1:499e9ec651b06f72d4f72597931b54ba88b21f78b0f5f0ca16eb5986496b0500"
   name = "github.com/mihongtech/linkchain-core"
   packages = [
     "accounts",
@@ -130,37 +130,39 @@
     "storage",
   ]
   pruneopts = "UT"
-  revision = "11b45cf64c682739d546566d993023db40705594"
+  revision = "463a16bace05f9bfd55fdf642bff12d236e2295a"
 
 [[projects]]
-  digest = "1:0c6b643ffbdc3809b02a78f71f8df3b1f91545cb3daad73686b2c535cf1552f7"
+  digest = "1:e5d0bd87abc2781d14e274807a470acd180f0499f8bf5bb18606e9ec22ad9de9"
   name = "github.com/pborman/uuid"
   packages = ["."]
   pruneopts = "UT"
-  revision = "8b1b92947f46224e3b97bb1a3a5b0382be00d31e"
-  version = "v1.2.0"
+  revision = "adf5a7427709b9deb95d29d3fa8a2bf9cfd388f1"
+  version = "v1.2"
 
 [[projects]]
-  branch = "master"
-  digest = "1:4293d7afbe7f9a4255b7f3fce291652eae1e08b105c88222505adc5075e0cb55"
+  digest = "1:31d83d1b1c288073c91abadee3caec87de2a1fb5dbe589039264a802e67a26b8"
   name = "github.com/rjeczalik/notify"
   packages = ["."]
   pruneopts = "UT"
-  revision = "629144ba06a1c6af28c1e42c228e3d42594ce081"
+  revision = "69d839f37b13a8cb7a78366f7633a4071cb43be7"
+  version = "v0.9.2"
 
 [[projects]]
-  digest = "1:14701e2f3e9f352e3750241102904e97c68fcbe06b2e16ad5e29fe54b39d666a"
+  digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
   name = "github.com/spf13/cobra"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6fd8e29b07d8242ebe2888060fede5766e240c25"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
 
 [[projects]]
-  digest = "1:c5b5745c31aef6138428387ee32f7e09186332c7a72ba5d6ed109101324de5db"
+  digest = "1:c1b1102241e7f645bc8e0c22ae352e8f0dc6484b6cb4d132fa9f24174e0119e2"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d929dcbb10863323c436af3cf76cb16a6dfc9b29"
+  revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
+  version = "v1.0.3"
 
 [[projects]]
   digest = "1:5b180f17d5bc50b765f4dcf0d126c72979531cbbd7f7929bf3edd87fb801ea2d"
@@ -184,21 +186,23 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:29672ea8ec3ef342d345f668d47666e45366b7691080ee4c07bf4851f4fa8864"
+  branch = "master"
+  digest = "1:39628c44b67004cdd7ff753f6490588b87defe2569413378719d7e4f92df352d"
   name = "golang.org/x/crypto"
   packages = [
     "pbkdf2",
     "scrypt",
   ]
   pruneopts = "UT"
-  revision = "614d502a4dac94afa3a6ce146bd1736da82514c6"
+  revision = "5c40567a22f818bd14a1ea7245dad9f8ef0691aa"
 
 [[projects]]
-  digest = "1:4dcdb3f7c22f5f048de7c7ad5b72c4547d63bfb4923da15538d0051d553b2ef8"
+  branch = "master"
+  digest = "1:010311506e3917b54487c35a4277e2709678a40c1587d82492c40b78b6a0a01d"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "11551d06cbcc94edc80a0facaccbda56473c19c1"
+  revision = "5ed2794edfdc1c54dfb61d619c5944285f35d444"
 
 [[projects]]
   digest = "1:5f1d44e13c151d777a80b0d8ca850347530773e73ccce5995a520cdc6947c205"

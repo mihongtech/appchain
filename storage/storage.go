@@ -38,7 +38,6 @@ func (s *Storage) OpenDatabase(name string, cache, handles int) (lcdb.Database, 
 		return lcdb.NewMemDatabase()
 	}
 
-	log.Info("pash is", "path", s.resolvePath(name))
 	return lcdb.NewLDBDatabase(s.resolvePath(name), cache, handles)
 }
 
