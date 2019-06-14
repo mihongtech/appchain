@@ -116,7 +116,7 @@ func (s *BCSIServer) Commit(id node_meta.BlockID) error {
 }
 
 func (s *BCSIServer) CheckBlock(block *node_meta.Block) error {
-	return nil
+	return s.interpreter.ValidateBlockBody(&block.Header, AppTransactionsConvert(&block.TXs), s.interpreter, s.chain)
 }
 
 func (s *BCSIServer) CheckTx(transaction node_meta.Transaction) error {
@@ -136,9 +136,8 @@ func (s *BCSIServer) FilterTx(txs []node_meta.Transaction) []node_meta.Transacti
 	signer, _ := node_meta.NewAddressFromStr(config.FirstPubMiner)
 	coinbase := helper.CreateCoinBaseTx(*signer, meta.NewAmount(config.DefaultBlockReward), uint32(height+1))
 	nodeTx, _ := meta.ConvertToNodeTX(*coinbase)
-	txs = append(txs, nodeTx)
 	newTxs := make([]node_meta.Transaction, 0)
 	newTxs = append(newTxs, nodeTx)
 	newTxs = append(newTxs, txs...)
-	return txs
+	return newTxs
 }
