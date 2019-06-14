@@ -137,5 +137,8 @@ func (s *BCSIServer) FilterTx(txs []node_meta.Transaction) []node_meta.Transacti
 	coinbase := helper.CreateCoinBaseTx(*signer, meta.NewAmount(config.DefaultBlockReward), uint32(height+1))
 	nodeTx, _ := meta.ConvertToNodeTX(*coinbase)
 	txs = append(txs, nodeTx)
+	newTxs := make([]node_meta.Transaction, 0)
+	newTxs = append(newTxs, nodeTx)
+	newTxs = append(newTxs, txs...)
 	return txs
 }
