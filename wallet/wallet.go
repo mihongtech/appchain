@@ -124,10 +124,11 @@ func (w *Wallet) GetAccount(key string) (*meta.Account, error) {
 }
 
 func (w *Wallet) queryAccount(id node_meta.Address) (meta.Account, error) {
-	bestBlock := w.bcsiAPI.CurrentBlock.Load().(*node_meta.Block)
-	if bestBlock == nil {
+	currentBlockData := w.bcsiAPI.CurrentBlock.Load()
+	if currentBlockData == nil {
 		return meta.Account{}, errors.New("best block have not store")
 	}
+	bestBlock := currentBlockData.(node_meta.Block)
 	root, err := w.bcsiAPI.GetBlockState(*bestBlock.GetBlockID())
 	if err != nil {
 		return meta.Account{}, err

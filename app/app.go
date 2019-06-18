@@ -1,6 +1,9 @@
 package app
 
 import (
+	"github.com/mihongtech/linkchain-core/common/http/client"
+	"github.com/mihongtech/linkchain-core/common/http/server"
+	"github.com/mihongtech/linkchain-core/proxy/rpc"
 	"time"
 
 	"github.com/mihongtech/appchain/app/context"
@@ -13,6 +16,7 @@ import (
 	"github.com/mihongtech/linkchain-core/common/util/log"
 	"github.com/mihongtech/linkchain-core/node"
 	node_config "github.com/mihongtech/linkchain-core/node/config"
+	"github.com/mihongtech/linkchain-core/proxy/local"
 	"github.com/mihongtech/linkchain-core/storage"
 )
 
@@ -38,6 +42,25 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 	//create bcsi service
 	appContext.BCSIAPI = bcsi.NewBCSIServer(s.GetDB(), chooseInterpreterAPI(appContext.Config.InterpreterAPI))
 
+	//node init
+	if !InitRPCNode(globalConfig) {
+		return false
+	}
+
+	//wallet init
+	walletSvc = wallet.NewWallet()
+	if !walletSvc.Setup(&appContext) {
+		return false
+	}
+	//wallet api init
+	appContext.WalletAPI = walletSvc
+
+	return true
+}
+
+func InitLocalNode(globalConfig *config.LinkChainConfig) bool {
+	bcsiLocalServer := local.NewLocalServer(appContext.BCSIAPI)
+	bcsiLocalClient := local.NewLocalClient(bcsiLocalServer)
 	//create core service
 	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
 		DataDir:            globalConfig.DataDir + "/core",
@@ -48,29 +71,52 @@ func Setup(globalConfig *config.LinkChainConfig) bool {
 		InterpreterAPIType: globalConfig.InterpreterAPI,
 		RpcAddr:            globalConfig.RpcAddr,
 	},
-		BcsiAPI: appContext.BCSIAPI,
+		BcsiAPI: bcsiLocalClient,
 	}
 	nodeSvc = node.NewNode(nodecfg.BaseConfig)
 
 	appContext.NodeAPI = node.NewPublicCoreAPI(nodeSvc)
 	appContext.BCSIAPI.Setup(appContext.NodeAPI)
 
-	//create wallet
-	walletSvc = wallet.NewWallet()
+	//node init
+	return nodeSvc.Setup(&nodecfg)
+}
+
+func InitRPCNode(globalConfig *config.LinkChainConfig) bool {
+	httpServerConfig := server.NewConfig("BCSI", time.Now().Unix(), "localhost:8081", "mihongtech", "mihongtech")
+	bcsiRPCServer, err := rpc.NewBCSIRPCServer(httpServerConfig, appContext.BCSIAPI)
+	if err != nil {
+		log.Error("bcsi rpc server create failed", err)
+		return false
+	}
+	if !bcsiRPCServer.SetUp(nil) {
+		log.Error("bcsi rpc server setup failed", err)
+		return false
+	}
+	if !bcsiRPCServer.Start() {
+		log.Error("bcsi rpc server start failed", err)
+		return false
+	}
+	bcsiRPCClient := rpc.NewBCSIRPCClient(&client.Config{RPCServer: "localhost:8081", RPCPassword: "mihongtech", RPCUser: "mihongtech"})
+	//create core service
+	nodecfg := node.Config{BaseConfig: node_config.BaseConfig{
+		DataDir:            globalConfig.DataDir + "/core",
+		GenesisPath:        globalConfig.GenesisPath,
+		ListenAddress:      globalConfig.ListenAddress,
+		NoDiscovery:        globalConfig.NoDiscovery,
+		BootstrapNodes:     globalConfig.BootstrapNodes,
+		InterpreterAPIType: globalConfig.InterpreterAPI,
+		RpcAddr:            globalConfig.RpcAddr,
+	},
+		BcsiAPI: bcsiRPCClient,
+	}
+	nodeSvc = node.NewNode(nodecfg.BaseConfig)
+
+	appContext.NodeAPI = node.NewPublicCoreAPI(nodeSvc)
+	appContext.BCSIAPI.Setup(appContext.NodeAPI)
 
 	//node init
-	if !nodeSvc.Setup(&nodecfg) {
-		return false
-	}
-
-	//wallet init
-	if !walletSvc.Setup(&appContext) {
-		return false
-	}
-	//wallet api init
-	appContext.WalletAPI = walletSvc
-
-	return true
+	return nodeSvc.Setup(&nodecfg)
 }
 
 func Run() {

@@ -2,13 +2,13 @@ package bcsi
 
 import (
 	"errors"
-	"github.com/mihongtech/appchain/config"
-	"github.com/mihongtech/appchain/helper"
-	"github.com/mihongtech/appchain/storage"
 	"sync/atomic"
 
 	"github.com/mihongtech/appchain/business/interpreter"
+	"github.com/mihongtech/appchain/config"
 	"github.com/mihongtech/appchain/core/meta"
+	"github.com/mihongtech/appchain/helper"
+	"github.com/mihongtech/appchain/storage"
 	"github.com/mihongtech/appchain/storage/state"
 	"github.com/mihongtech/linkchain-core/common/lcdb"
 	"github.com/mihongtech/linkchain-core/common/math"
@@ -77,7 +77,7 @@ func (s *BCSIServer) GetBlockState(id node_meta.BlockID) (node_meta.TreeID, erro
 	return stateDB.GetRootHash(), err
 }
 
-func (s *BCSIServer) UpdateChain(head *node_meta.Block) error {
+func (s *BCSIServer) UpdateChain(head node_meta.Block) error {
 	if s.CurrentBlock.Load() == nil {
 		log.Info("BCSIServer", "UpdateChain", "init chain", "best block", head.GetBlockID().String())
 	} else {
@@ -87,7 +87,7 @@ func (s *BCSIServer) UpdateChain(head *node_meta.Block) error {
 	return nil
 }
 
-func (s *BCSIServer) ProcessBlock(block *node_meta.Block) error {
+func (s *BCSIServer) ProcessBlock(block node_meta.Block) error {
 	//check app have status
 	if _, ok := s.statusCache.Get(*block.GetBlockID()); ok {
 		return errors.New(ErrorProcessed)
@@ -115,7 +115,7 @@ func (s *BCSIServer) Commit(id node_meta.BlockID) error {
 	return storage.WriteStatus(s.Db, id, status)
 }
 
-func (s *BCSIServer) CheckBlock(block *node_meta.Block) error {
+func (s *BCSIServer) CheckBlock(block node_meta.Block) error {
 	return s.interpreter.ValidateBlockBody(&block.Header, AppTransactionsConvert(&block.TXs), s.interpreter, s.chain)
 }
 
@@ -129,9 +129,10 @@ func (s *BCSIServer) CheckTx(transaction node_meta.Transaction) error {
 
 func (s *BCSIServer) FilterTx(txs []node_meta.Transaction) []node_meta.Transaction {
 	height := 1
-	block := s.CurrentBlock.Load().(*node_meta.Block)
+	block := s.CurrentBlock.Load()
 	if block != nil {
-		height = int(block.GetHeight())
+		meta := block.(node_meta.Block)
+		height = int(meta.GetHeight())
 	}
 	signer, _ := node_meta.NewAddressFromStr(config.FirstPubMiner)
 	coinbase := helper.CreateCoinBaseTx(*signer, meta.NewAmount(config.DefaultBlockReward), uint32(height+1))
